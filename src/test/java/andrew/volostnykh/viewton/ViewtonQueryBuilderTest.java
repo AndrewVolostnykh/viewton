@@ -76,7 +76,7 @@ public class ViewtonQueryBuilderTest {
     }
 
     @Test
-    @DisplayName("Single parameter built correctly")
+    @DisplayName("Single parameter")
     void testBuildValidMapWithOneFilter() {
         TestQueryBuilder builder = new TestQueryBuilder();
 
@@ -88,7 +88,7 @@ public class ViewtonQueryBuilderTest {
     }
 
     @Test
-    @DisplayName("Operators range, between, equality, or, great/less built correctly")
+    @DisplayName("Operators range, between, equality, or, great/less")
     void testBuildFiltersWithValidOperators() {
         TestQueryBuilder builder = new TestQueryBuilder();
 
@@ -114,7 +114,7 @@ public class ViewtonQueryBuilderTest {
     }
 
     @Test
-    @DisplayName("Several 'OR' values built correct")
+    @DisplayName("Several 'OR' values")
     void testBuilderOrSeveralValues() {
         TestQueryBuilder builder = new TestQueryBuilder();
 
@@ -126,7 +126,7 @@ public class ViewtonQueryBuilderTest {
     }
 
     @Test
-    @DisplayName("Distinct, pagination, total, attributes selection built correctly")
+    @DisplayName("Distinct, pagination, total, attributes selection")
     void testBuildValidTableViewParams() {
         TestQueryBuilder builder = new TestQueryBuilder();
 
@@ -151,7 +151,7 @@ public class ViewtonQueryBuilderTest {
     }
 
     @Test
-    @DisplayName("Inner attributes selector built correctly")
+    @DisplayName("Inner attributes selector")
     void testBuildAttributesWithFunctionBasedMethod() {
         TestQueryBuilder builder = new TestQueryBuilder();
 
@@ -167,7 +167,7 @@ public class ViewtonQueryBuilderTest {
     }
 
     @Test
-    @DisplayName("Several sorting params built correctly")
+    @DisplayName("Several sorting params")
     void testSortingParams() {
         TestQueryBuilder builder = new TestQueryBuilder();
 
@@ -178,6 +178,79 @@ public class ViewtonQueryBuilderTest {
                 .build();
 
         assertEquals("date,test2,-test3,-test4", params.get("sorting"));
+    }
+
+    @Test
+    @DisplayName("Several 'OR' operators")
+    void severalOR() {
+        TestQueryBuilder builder = new TestQueryBuilder();
+        Map<String, String> result = builder.test1()
+                .or("fiestValue")
+                .or("secondValue")
+                .or("thirdValue")
+                .next().build();
+
+        assertEquals("firstValue|secondValue|thirdValue", result.get("test1"));
+    }
+
+    @Test
+    @DisplayName("Ignore case equalsTo")
+    void equalsToIgnoreCase() {
+        TestQueryBuilder builder = new TestQueryBuilder();
+        Map<String, String> result = builder.test1()
+                .ignoreCase()
+                .equalsTo("someValue")
+                .build();
+
+        assertEquals("^someValue", result.get("test1"));
+    }
+
+    @Test
+    @DisplayName("Ignore case equalsTo two params")
+    void equalsIgnoreCaseForOnlyOneOfTwoParams() {
+        TestQueryBuilder builder = new TestQueryBuilder();
+        Map<String, String> result = builder
+                .test5().equalsTo("someAnotherValue")
+                .test1().ignoreCase().equalsTo("someValue")
+                .build();
+
+        assertEquals("^someValue", result.get("test1"));
+        assertEquals("someAnotherValue", result.get("test5"));
+    }
+
+    @Test
+    @DisplayName("Ignore case notEqualsTo")
+    void ignoreCaseNotEqualsTo() {
+        TestQueryBuilder builder = new TestQueryBuilder();
+        Map<String, String> result = builder
+                .test5().ignoreCase().notEqualsTo("someValue")
+                .build();
+
+        assertEquals("^<>someValue", result.get("test5"));
+    }
+
+    @Test
+    @DisplayName("Ignore case 'OR'")
+    void ignoreCaseOr() {
+        TestQueryBuilder builder = new TestQueryBuilder();
+        Map<String, String> result = builder
+                .test5().ignoreCase().or("someValue").or("another")
+                .next()
+                .build();
+
+        assertEquals("^someValue|another", result.get("test5"));
+    }
+
+    @Test
+    @DisplayName("Ignore case several 'OR'")
+    void ignoreCaseSeveralOr() {
+        TestQueryBuilder builder = new TestQueryBuilder();
+        Map<String, String> result = builder
+                .test5().ignoreCase().or("someValue").ignoreCase().or("another")
+                .next()
+                .build();
+
+        assertEquals("^someValue|^another", result.get("test5"));
     }
 
     @Test

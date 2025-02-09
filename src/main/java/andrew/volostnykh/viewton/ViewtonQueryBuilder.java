@@ -24,7 +24,7 @@ import java.util.stream.Collectors;
  * It provides methods for defining various conditions
  * and attributes that will be included as URL parameters.
  * </p>
- *
+ * <p>
  * Extend it in final entity and specify exact params to allow this builder access fields.
  *
  * <p>Example of usage:</p>
@@ -42,8 +42,8 @@ import java.util.stream.Collectors;
  *  }
  *  }
  *  </pre>
- *  It allows you to build query for IPC:
- *  <pre>
+ * It allows you to build query for IPC:
+ * <pre>
  *  {@code
  *
  *  }
@@ -168,10 +168,16 @@ public class ViewtonQueryBuilder {
         protected String fieldName;
         protected String value;
         protected B caller;
+        protected boolean ignoreCase;
 
         public FilterBuilder(Object fieldName, B caller) {
             this.fieldName = fieldName.toString();
             this.caller = caller;
+        }
+
+        public FilterBuilder<B> ignoreCase() {
+            this.ignoreCase = true;
+            return this;
         }
 
         public B lessThenOrEqual(Object value) {
@@ -188,12 +194,20 @@ public class ViewtonQueryBuilder {
 
         public B equalsTo(Object to) {
             this.value = to.toString();
+            if (ignoreCase) {
+                this.value = "^" + this.value;
+                ignoreCase = false;
+            }
             caller.registerParam(this);
             return caller;
         }
 
         public B notEqualsTo(Object to) {
             this.value = new NotEqualOperator().getValue() + to.toString();
+            if (ignoreCase) {
+                this.value = "^" + this.value;
+                ignoreCase = false;
+            }
             caller.registerParam(this);
             return caller;
         }
@@ -218,6 +232,10 @@ public class ViewtonQueryBuilder {
 
         public OrAndBuilder<B> or(Object value) {
             this.value = value.toString();
+            if (ignoreCase) {
+                this.value = "^" + this.value;
+                ignoreCase = false;
+            }
             return new OrAndBuilder<>(caller, this);
         }
 
@@ -255,6 +273,7 @@ public class ViewtonQueryBuilder {
     public static class OrAndBuilder<B extends ViewtonQueryBuilder> {
         private final B caller;
         private final FilterBuilder<B> param;
+        boolean ignoreCase;
 
         public OrAndBuilder(B caller, FilterBuilder<B> param) {
             this.caller = caller;
@@ -266,7 +285,16 @@ public class ViewtonQueryBuilder {
             return caller;
         }
 
+        public OrAndBuilder<B> ignoreCase() {
+            this.ignoreCase = true;
+            return this;
+        }
+
         public OrAndBuilder<B> or(String value) {
+            if (ignoreCase) {
+                value = "^" + value;
+                ignoreCase = false;
+            }
             param.setValue(param.value() + new OrOperator().getValue() + value);
             return this;
         }

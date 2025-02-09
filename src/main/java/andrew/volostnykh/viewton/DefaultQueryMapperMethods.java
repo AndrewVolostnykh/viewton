@@ -113,7 +113,7 @@ public class DefaultQueryMapperMethods {
                 .orElse(new ArrayList<>())
                 .stream()
                 .map(expression -> {
-                    Order order = expression.startsWith("-") ? Order.ASCENDING : Order.DESCENDING;
+                    Order order = expression.startsWith("-") ? Order.DESCENDING : Order.ASCENDING;
                     return new RawOrderBy(expression.replace("-", ""), order);
                 })
                 .toList();
