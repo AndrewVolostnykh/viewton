@@ -5,7 +5,6 @@ import andrew.volostnykh.viewton.operator.GreaterOrEqualOperator;
 import andrew.volostnykh.viewton.operator.LessOperator;
 import andrew.volostnykh.viewton.operator.LessOrEqualsOperator;
 import andrew.volostnykh.viewton.operator.NotEqualOperator;
-import andrew.volostnykh.viewton.operator.Operator;
 import andrew.volostnykh.viewton.operator.OrOperator;
 import andrew.volostnykh.viewton.operator.RangeOperator;
 import org.springframework.util.Assert;
@@ -17,23 +16,56 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-public class ViewtonParamsBuilder {
+/**
+ * A builder class for constructing request parameters for queries.
+ * <p>
+ * This class facilitates the construction of query parameters for filtering, pagination, sorting,
+ * and other advanced options in a request URL which would be used for IPC.
+ * It provides methods for defining various conditions
+ * and attributes that will be included as URL parameters.
+ * </p>
+ *
+ * Extend it in final entity and specify exact params to allow this builder access fields.
+ *
+ * <p>Example of usage:</p>
+ * <pre>
+ * {@code
+ *  class SomeEntity extends ViewtonQueryBuilder {
+ *      private Long someField;
+ *
+ *
+ *      static class SomeEntityViewtonQueryBuilder extends ViewtonQueryBuilder {
+ *          public FilterBuilder<TestQueryBuilder> someField() {
+ *                 return param("someField");
+ *             }
+ *      }
+ *  }
+ *  }
+ *  </pre>
+ *  It allows you to build query for IPC:
+ *  <pre>
+ *  {@code
+ *
+ *  }
+ *  </pre>
+ */
+public class ViewtonQueryBuilder {
 
     private static final String PAGE_SIZE_PARAM_NAME = "page_size";
     private static final String SORTING_PARAM_NAME = "sorting";
 
     private final Map<String, String> params;
 
-    public ViewtonParamsBuilder() {
+    public ViewtonQueryBuilder() {
         this.params = new HashMap<>();
     }
 
     @SuppressWarnings("unchecked")
-    protected <B extends ViewtonParamsBuilder> FilterBuilder<B> param(String fieldName) {
+    protected <B extends ViewtonQueryBuilder> FilterBuilder<B> param(String fieldName) {
         return new FilterBuilder<>(fieldName, (B) this);
     }
 
-    protected <B extends ViewtonParamsBuilder> void registerParam(FilterBuilder<B> filterBuilder) {
+    protected <B extends ViewtonQueryBuilder> void registerParam(FilterBuilder<B> filterBuilder) {
         if (SORTING_PARAM_NAME.equals(filterBuilder.value())) {
             if (params.get(SORTING_PARAM_NAME) == null) {
                 params.put(SORTING_PARAM_NAME, filterBuilder.key());
@@ -46,51 +78,51 @@ public class ViewtonParamsBuilder {
     }
 
     @SuppressWarnings("unchecked")
-    public <B extends ViewtonParamsBuilder> B page(int page) {
+    public <B extends ViewtonQueryBuilder> B page(int page) {
         params.put("page", String.valueOf(page));
         return (B) this;
     }
 
     @SuppressWarnings("unchecked")
-    public <B extends ViewtonParamsBuilder> B noPagination() {
+    public <B extends ViewtonQueryBuilder> B noPagination() {
         params.put(PAGE_SIZE_PARAM_NAME, "-1");
         return (B) this;
     }
 
     @SuppressWarnings("unchecked")
-    public <B extends ViewtonParamsBuilder> B pageSize(int pageSize) {
+    public <B extends ViewtonQueryBuilder> B pageSize(int pageSize) {
         params.put(PAGE_SIZE_PARAM_NAME, String.valueOf(pageSize));
         return (B) this;
     }
 
     @SuppressWarnings("unchecked")
-    public <B extends ViewtonParamsBuilder> B count() {
+    public <B extends ViewtonQueryBuilder> B count() {
         params.put("count", "true");
         return (B) this;
     }
 
     @SuppressWarnings("unchecked")
-    public <B extends ViewtonParamsBuilder> B distinct() {
+    public <B extends ViewtonQueryBuilder> B distinct() {
         params.put("distinct", "true");
         return (B) this;
     }
 
     @SuppressWarnings("unchecked")
-    public <B extends ViewtonParamsBuilder> B total() {
+    public <B extends ViewtonQueryBuilder> B total() {
         params.put("total", "true");
         return (B) this;
     }
 
-    public <B extends ViewtonParamsBuilder> B totalAttributes(Function<B, List<FilterBuilder<?>>> attributes) {
+    public <B extends ViewtonQueryBuilder> B totalAttributes(Function<B, List<FilterBuilder<?>>> attributes) {
         return paramWithFields(attributes, "totalAttributes");
     }
 
-    public <B extends ViewtonParamsBuilder> B attributes(Function<B, List<FilterBuilder<?>>> attributes) {
+    public <B extends ViewtonQueryBuilder> B attributes(Function<B, List<FilterBuilder<?>>> attributes) {
         return paramWithFields(attributes, "attributes");
     }
 
     @SuppressWarnings("unchecked")
-    private <B extends ViewtonParamsBuilder> B paramWithFields(Function<B, List<FilterBuilder<?>>> attributes, String paramName) {
+    private <B extends ViewtonQueryBuilder> B paramWithFields(Function<B, List<FilterBuilder<?>>> attributes, String paramName) {
         Assert.notNull(attributes, "Attributes should not be null");
         List<String> attributesNames = attributes.apply((B) this).stream().map(FilterBuilder::key).collect(Collectors.toList());
         if (!attributesNames.isEmpty()) {
@@ -101,7 +133,7 @@ public class ViewtonParamsBuilder {
     }
 
     @SuppressWarnings("unchecked")
-    public <B extends ViewtonParamsBuilder> B attributes(FilterBuilder<?>... attributes) {
+    public <B extends ViewtonQueryBuilder> B attributes(FilterBuilder<?>... attributes) {
         if (attributes.length > 0) {
             List<String> attributesNames = Arrays.stream(attributes).map(FilterBuilder::key).collect(Collectors.toList());
             params.put("attributes", String.join(",", attributesNames));
@@ -110,7 +142,7 @@ public class ViewtonParamsBuilder {
     }
 
     @SuppressWarnings("unchecked")
-    public <B extends ViewtonParamsBuilder> B totalAttributes(FilterBuilder<?>... totalAttributes) {
+    public <B extends ViewtonQueryBuilder> B totalAttributes(FilterBuilder<?>... totalAttributes) {
         if (totalAttributes.length > 0) {
             List<String> attributesNames = Arrays.stream(totalAttributes).map(FilterBuilder::key).collect(Collectors.toList());
             params.put("totalAttributes", String.join(",", attributesNames));
@@ -122,7 +154,16 @@ public class ViewtonParamsBuilder {
         return params;
     }
 
-    public static class FilterBuilder<B extends ViewtonParamsBuilder> {
+    /**
+     * A builder class for individual filters within a query.
+     * <p>
+     * This class allows for defining conditions such as "equal to", "greater than", "less than",
+     * and sorting. These filters are then registered with the parent {@link ViewtonQueryBuilder}.
+     * </p>
+     *
+     * @param <B> the type of the parent builder
+     */
+    public static class FilterBuilder<B extends ViewtonQueryBuilder> {
 
         protected String fieldName;
         protected String value;
@@ -206,7 +247,12 @@ public class ViewtonParamsBuilder {
         }
     }
 
-    public static class OrAndBuilder<B extends ViewtonParamsBuilder> {
+    /**
+     * A helper class for building OR conditions for filters.
+     *
+     * @param <B> the type of the parent builder
+     */
+    public static class OrAndBuilder<B extends ViewtonQueryBuilder> {
         private final B caller;
         private final FilterBuilder<B> param;
 

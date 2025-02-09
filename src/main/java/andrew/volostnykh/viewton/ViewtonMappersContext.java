@@ -5,6 +5,21 @@ import java.util.Map;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
+/**
+ * Context class that holds mappers for extracting query parameters from the URL and converting them
+ * into appropriate objects used in building queries. This class provides a flexible way to map various
+ * query parameters (such as filters, sorting, paging) to the corresponding Java objects needed for
+ * constructing the SQL query via JPA Criteria API.
+ *
+ * <p>The mappers are defined as static fields and can be customized by registering new mappers.</p>
+ *
+ * <p>Example of how mappers can be used:</p>
+ * <pre>
+ * Map<String, String> queryParams = ...;
+ * List<RawWhereClause> whereClauses = ViewtonMappersContext.mapWhereClauses.apply(queryParams);
+ * List<RawOrderBy> orderBy = ViewtonMappersContext.mapOrderByes.apply(queryParams);
+ * </pre>
+ */
 public class ViewtonMappersContext {
 
     static Function<Map<String, String>, List<? extends RawWhereClause>> mapWhereClauses;

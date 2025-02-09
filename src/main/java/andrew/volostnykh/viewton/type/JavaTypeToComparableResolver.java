@@ -6,6 +6,20 @@ import andrew.volostnykh.viewton.RawValue;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * A utility class responsible for resolving database types to their corresponding Java types and converting them
+ * into {@link ComparableValue} objects. This resolver provides a mechanism for converting various raw database
+ * values into Java-compatible types that can be used in comparisons or operations.
+ * <p>
+ * The class maintains a list of {@link RawToJavaTypeConverter} instances that handle specific conversions
+ * for different types of database values. The registered converters are used to convert raw values (such as from
+ * a database query result) into Java values of the appropriate type (e.g., Integer, String, BigDecimal, etc.).
+ * </p>
+ * <p>
+ * The class also allows for registering custom converters if there are additional data types or conversions
+ * needed.
+ * </p>
+ */
 public class JavaTypeToComparableResolver {
 
     private static final List<RawToJavaTypeConverter> DATA_TYPE_CONVERTERS = new ArrayList<>();
@@ -24,10 +38,28 @@ public class JavaTypeToComparableResolver {
         DATA_TYPE_CONVERTERS.add(new EnumConverter());
     }
 
+    /**
+     * Registers a custom converter to handle the conversion of raw database values into Java types.
+     *
+     * @param converter The {@link RawToJavaTypeConverter} to register.
+     * @see RawToJavaTypeConverter
+     */
     public static void registerConverter(RawToJavaTypeConverter converter) {
         DATA_TYPE_CONVERTERS.add(converter);
     }
 
+    /**
+     * Converts a {@link RawValue} into a {@link ComparableValue} by finding the appropriate converter based
+     * on the raw value's Java type.
+     * <p>
+     * If a suitable converter is found in the list of registered converters, the raw value will be converted
+     * to a {@link ComparableValue}. If no converter is found for the raw type, the method will return a
+     * default {@link ComparableValue} using the raw value's value and ignore case flag.
+     * </p>
+     *
+     * @param rawValue The raw database value to be converted.
+     * @return The corresponding {@link ComparableValue} for the raw database value.
+     */
     public static ComparableValue toJavaComparable(RawValue rawValue) {
         return DATA_TYPE_CONVERTERS.stream()
                 .filter(converter -> converter.requiredType(rawValue.getJavaType()))

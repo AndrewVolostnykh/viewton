@@ -5,7 +5,6 @@ import andrew.volostnykh.viewton.operator.GreaterOrEqualOperator;
 import andrew.volostnykh.viewton.operator.LessOperator;
 import andrew.volostnykh.viewton.operator.LessOrEqualsOperator;
 import andrew.volostnykh.viewton.operator.NotEqualOperator;
-import andrew.volostnykh.viewton.operator.Operator;
 import andrew.volostnykh.viewton.operator.RangeOperator;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -14,10 +13,10 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 
-import static andrew.volostnykh.viewton.ViewtonParamsBuilderTest.TestView.TestParamsBuilder;
+import static andrew.volostnykh.viewton.ViewtonQueryBuilderTest.TestView.TestQueryBuilder;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class ViewtonParamsBuilderTest {
+public class ViewtonQueryBuilderTest {
 
     private static final String lowerDate = "12-12-1999";
     private static final String greaterDate = "12-12-2022";
@@ -40,37 +39,37 @@ public class ViewtonParamsBuilderTest {
         private String test4;
         private String test5;
 
-        static class TestParamsBuilder extends ViewtonParamsBuilder {
+        static class TestQueryBuilder extends ViewtonQueryBuilder {
 
-            public FilterBuilder<TestParamsBuilder> id() {
+            public FilterBuilder<TestQueryBuilder> id() {
                 return param("id");
             }
 
-            public FilterBuilder<TestParamsBuilder> name() {
+            public FilterBuilder<TestQueryBuilder> name() {
                 return param("name");
             }
 
-            public FilterBuilder<TestParamsBuilder> date() {
+            public FilterBuilder<TestQueryBuilder> date() {
                 return param("date");
             }
 
-            public FilterBuilder<TestParamsBuilder> test1() {
+            public FilterBuilder<TestQueryBuilder> test1() {
                 return param("test1");
             }
 
-            public FilterBuilder<TestParamsBuilder> test2() {
+            public FilterBuilder<TestQueryBuilder> test2() {
                 return param("test2");
             }
 
-            public FilterBuilder<TestParamsBuilder> test3() {
+            public FilterBuilder<TestQueryBuilder> test3() {
                 return param("test3");
             }
 
-            public FilterBuilder<TestParamsBuilder> test4() {
+            public FilterBuilder<TestQueryBuilder> test4() {
                 return param("test4");
             }
 
-            public FilterBuilder<TestParamsBuilder> test5() {
+            public FilterBuilder<TestQueryBuilder> test5() {
                 return param("test5");
             }
         }
@@ -79,7 +78,7 @@ public class ViewtonParamsBuilderTest {
     @Test
     @DisplayName("Single parameter built correctly")
     void testBuildValidMapWithOneFilter() {
-        TestParamsBuilder builder = new TestParamsBuilder();
+        TestQueryBuilder builder = new TestQueryBuilder();
 
         Map<String, String> params = builder.date()
                 .between(lowerDate, greaterDate)
@@ -91,7 +90,7 @@ public class ViewtonParamsBuilderTest {
     @Test
     @DisplayName("Operators range, between, equality, or, great/less built correctly")
     void testBuildFiltersWithValidOperators() {
-        TestParamsBuilder builder = new TestParamsBuilder();
+        TestQueryBuilder builder = new TestQueryBuilder();
 
         Map<String, String> params = builder
                 .date().between(lowerDate, greaterDate)
@@ -117,7 +116,7 @@ public class ViewtonParamsBuilderTest {
     @Test
     @DisplayName("Several 'OR' values built correct")
     void testBuilderOrSeveralValues() {
-        TestParamsBuilder builder = new TestParamsBuilder();
+        TestQueryBuilder builder = new TestQueryBuilder();
 
         Map<String, String> params = builder
                 .id().or("1").or("2").or("444").next()
@@ -129,7 +128,7 @@ public class ViewtonParamsBuilderTest {
     @Test
     @DisplayName("Distinct, pagination, total, attributes selection built correctly")
     void testBuildValidTableViewParams() {
-        TestParamsBuilder builder = new TestParamsBuilder();
+        TestQueryBuilder builder = new TestQueryBuilder();
 
         int page = 1;
         int pageSize = 10;
@@ -154,12 +153,12 @@ public class ViewtonParamsBuilderTest {
     @Test
     @DisplayName("Inner attributes selector built correctly")
     void testBuildAttributesWithFunctionBasedMethod() {
-        TestParamsBuilder builder = new TestParamsBuilder();
+        TestQueryBuilder builder = new TestQueryBuilder();
 
         Map<String, String> params = builder.count()
                 .total()
-                .attributes((TestParamsBuilder thisBuilder) -> List.of(thisBuilder.id(), thisBuilder.name(), thisBuilder.test5()))
-                .totalAttributes((TestParamsBuilder thisBuilder) -> List.of(builder.test1(), builder.test2()))
+                .attributes((TestQueryBuilder thisBuilder) -> List.of(thisBuilder.id(), thisBuilder.name(), thisBuilder.test5()))
+                .totalAttributes((TestQueryBuilder thisBuilder) -> List.of(builder.test1(), builder.test2()))
                 .build();
 
         assertEquals("true", params.get("total"));
@@ -170,7 +169,7 @@ public class ViewtonParamsBuilderTest {
     @Test
     @DisplayName("Several sorting params built correctly")
     void testSortingParams() {
-        TestParamsBuilder builder = new TestParamsBuilder();
+        TestQueryBuilder builder = new TestQueryBuilder();
 
         Map<String, String> params = builder.date().ascSort()
                 .test2().ascSort()
@@ -184,7 +183,7 @@ public class ViewtonParamsBuilderTest {
     @Test
     @DisplayName("No pagination set 'page_size' param to -1")
     void testNoPagination() {
-        TestParamsBuilder builder = new TestParamsBuilder();
+        TestQueryBuilder builder = new TestQueryBuilder();
 
         Map<String, String> params = builder.noPagination().build();
 
