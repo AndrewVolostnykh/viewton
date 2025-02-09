@@ -185,7 +185,7 @@ public class ViewtonQueryBuilderTest {
     void severalOR() {
         TestQueryBuilder builder = new TestQueryBuilder();
         Map<String, String> result = builder.test1()
-                .or("fiestValue")
+                .or("firstValue")
                 .or("secondValue")
                 .or("thirdValue")
                 .next().build();

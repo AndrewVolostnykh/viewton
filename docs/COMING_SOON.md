@@ -4,7 +4,7 @@ The list of features will be implemented near future.
 - [x] Params builder for IPC
 - [x] Ignore case for specific fields
 - [x] Extension API
-- [ ] Total test coverage
+- [ ] Extension API test coverage
 - [ ] Hibernate 5 release
 - [ ] JavaScript builder
 - [ ] ViewtonQueryBuilder with ignoreCase feature
