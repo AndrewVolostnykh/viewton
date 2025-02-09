@@ -9,15 +9,15 @@ import java.util.List;
 public class RawWhereClause {
 
     private final String fieldName;
-    private final List<String> values;
+    private final List<RawValue> values;
     private Operator operator;
     private boolean ignoreCase;
 
     public RawWhereClause(String fieldName, String rawCondition) {
-        this.ignoreCase = !fieldName.startsWith("^");
+        this.ignoreCase = fieldName.startsWith("^");
         this.fieldName = fieldName.replace("^", "");
         this.values = Arrays.stream(Operator.values())
-                .filter(operator -> rawCondition.contains(operator.toString()))
+                .filter(operator -> rawCondition.contains(operator.getValue()))
                 .findFirst()
                 .map(operator -> {
                     this.operator = operator;
@@ -27,12 +27,34 @@ public class RawWhereClause {
         ;
     }
 
-    public List<String> parseValues(String filterValue, Operator operator) {
+    public List<RawValue> parseValues(String filterValue, Operator operator) {
         if (operator == Operator.RANGE) {
-            return Arrays.asList(filterValue.split("\\.\\."));
+            return splitToRawValue(filterValue, "\\.\\.");
         } else if (operator == Operator.OR) {
-            return Arrays.asList(filterValue.split("\\|"));
+            return splitToRawValue(filterValue, "\\|");
+        } else {
+            RawValue rawValue = new RawValue();
+            if (filterValue.contains("^")) {
+                rawValue.setIgnoreCase(true);
+                rawValue.setValue(filterValue.replace("^", "").replaceFirst(operator.getValue(), ""));
+            } else {
+                rawValue.setValue(filterValue.replaceFirst(operator.getValue(), ""));
+            }
+
+            return List.of(rawValue);
         }
-        return List.of(filterValue.replaceFirst(filterValue, ""));
+    }
+
+    public List<RawValue> splitToRawValue(String filterValue, String splitRegex) {
+        return Arrays.stream(filterValue.split(splitRegex)).map(value -> {
+            RawValue rawValue = new RawValue();
+            if (value.contains("^")) {
+                rawValue.setValue(value.replace("^", ""));
+                rawValue.setIgnoreCase(true);
+            } else {
+                rawValue.setValue(value);
+            }
+            return rawValue;
+        }).toList();
     }
 }

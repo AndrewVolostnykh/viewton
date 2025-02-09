@@ -25,4 +25,9 @@ public class ViewtonQuery {
     public boolean doNotTotals() {
         return !total;
     }
+
+    // nature SQL offset
+    public int getPage() {
+        return (page - 1) * pageSize;
+    }
 }

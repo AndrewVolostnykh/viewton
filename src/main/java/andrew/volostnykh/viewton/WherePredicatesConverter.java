@@ -1,23 +1,20 @@
 package andrew.volostnykh.viewton;
 
-import andrew.volostnykh.viewton.utils.DateUtil;
+import andrew.volostnykh.viewton.type.JavaTypeToComparableResolver;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.Path;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.function.BiFunction;
-import java.util.stream.Stream;
 
 public class WherePredicatesConverter {
 
-    private final Map<Operator, BiFunction<RawWhereClause, Path, Predicate>> predicateConverters;
-    private final CriteriaBuilder cb;
-    private final Root root;
+    protected final Map<Operator, BiFunction<RawWhereClause, Path, Predicate>> predicateConverters;
+    protected final CriteriaBuilder cb;
+    protected final Root root;
 
     public WherePredicatesConverter(CriteriaBuilder cb, Root root) {
         this.cb = cb;
@@ -34,8 +31,17 @@ public class WherePredicatesConverter {
         );
     }
 
-    private Predicate convertEquals(RawWhereClause clause, Path path) {
-        Comparable value = valueToComparable(clause, path).get(0);
+    public List<Predicate> convert(List<RawWhereClause> whereClauses) {
+        return whereClauses.stream()
+                .map(clause -> predicateConverters.get(clause.getOperator()).apply(
+                        clause,
+                        root.get(clause.getFieldName()))
+                )
+                .toList();
+    }
+
+    protected Predicate convertEquals(ComparableValue comparableValue, Path path) {
+        Comparable value = comparableValue.getValue();
 
         if ("null".equals(value)
                 || "%null".equals(value)
@@ -46,7 +52,7 @@ public class WherePredicatesConverter {
 
         Class javaType = path.getJavaType();
         if (String.class.isAssignableFrom(javaType)) {
-            if (clause.isIgnoreCase()) {
+            if (comparableValue.isIgnoreCase()) {
                 return cb.like(path, value.toString());
             } else {
                 return cb.like(cb.lower(path), value.toString().toLowerCase());
@@ -56,83 +62,62 @@ public class WherePredicatesConverter {
         return cb.equal(path, value);
     }
 
-    private Predicate convertNotEquals(RawWhereClause clause, Path path) {
+    protected Predicate convertEquals(RawWhereClause clause, Path path) {
+        ComparableValue value = valueToComparable(clause, path).get(0);
+
+        return convertEquals(value, path);
+    }
+
+    protected Predicate convertNotEquals(RawWhereClause clause, Path path) {
         return cb.not(convertEquals(clause, path));
     }
 
-    private Predicate convertLess(RawWhereClause clause, Path path) {
-        return cb.lessThan(path, valueToComparable(clause, path).get(0));
+    protected Predicate convertLess(RawWhereClause clause, Path path) {
+        return cb.lessThan(path, valueToComparable(clause, path).get(0).getValue());
     }
 
-    private Predicate convertGreater(RawWhereClause clause, Path path) {
-        return cb.greaterThan(path, valueToComparable(clause, path).get(0));
+    protected Predicate convertGreater(RawWhereClause clause, Path path) {
+        return cb.greaterThan(path, firstValueToComparable(clause, path).getValue());
     }
 
-    private Predicate convertLessOrEquals(RawWhereClause clause, Path path) {
-        return cb.lessThanOrEqualTo(path, valueToComparable(clause, path).get(0));
+    protected Predicate convertLessOrEquals(RawWhereClause clause, Path path) {
+        return cb.lessThanOrEqualTo(path, firstValueToComparable(clause, path).getValue());
     }
 
-    private Predicate convertGreaterOrEquals(RawWhereClause clause, Path path) {
-        return cb.greaterThanOrEqualTo(path, valueToComparable(clause, path).get(0));
+    protected Predicate convertGreaterOrEquals(RawWhereClause clause, Path path) {
+        return cb.greaterThanOrEqualTo(path, firstValueToComparable(clause, path).getValue());
     }
 
-    private Predicate convertRange(RawWhereClause clause, Path path) {
-        List<Comparable> pair = valueToComparable(clause, path);
+    protected Predicate convertRange(RawWhereClause clause, Path path) {
+        List<ComparableValue> pair = valueToComparable(clause, path);
         if (pair.size() != 2) {
             throw new IllegalArgumentException("Invalid range clause: " + clause);
         }
 
-        return cb.between(path, pair.get(0), pair.get(1));
+        return cb.between(path, pair.get(0).getValue(), pair.get(1).getValue());
     }
 
-    private Predicate convertOr(RawWhereClause clause, Path path) {
-        List<Comparable> values = valueToComparable(clause, path);
-
-        Predicate[] predicates = values.stream()
-                .map(fieldValue -> convertEquals(clause, path))
-                .toArray(Predicate[]::new);
-
-        return cb.or(predicates);
+    protected Predicate convertOr(RawWhereClause clause, Path path) {
+        return cb.or(
+                valueToComparable(clause, path).stream()
+                        .map(fieldValue -> convertEquals(fieldValue, path))
+                        .toArray(Predicate[]::new)
+        );
     }
 
-    public List<Predicate> convert(List<RawWhereClause> whereClauses) {
-        return whereClauses.stream()
-                .map(clause -> predicateConverters.get(clause.getOperator()).apply(
-                        clause,
-                        root.get(clause.getFieldName()))
-                )
-                .toList();
+    protected ComparableValue firstValueToComparable(RawWhereClause clauses, Path path) {
+        return valueToComparable(clauses, path).get(0);
     }
 
-    private List<Comparable> valueToComparable(RawWhereClause clause, Path path) {
+    protected List<ComparableValue> valueToComparable(RawWhereClause clause, Path path) {
         return clause.getValues()
                 .stream()
                 .map(value -> valueToComparable(value, path))
                 .toList();
     }
 
-    private Comparable valueToComparable(String value, Path path) {
-        Class<?> javaType = path.getJavaType();
-        if (LocalDateTime.class.isAssignableFrom(javaType)) {
-            return DateUtil.parseIsoDateTime(value);
-        } else if (LocalDate.class.isAssignableFrom(javaType)) {
-            return DateUtil.parseIsoDate(value);
-        } else if (Integer.class.isAssignableFrom(javaType) || Integer.TYPE == javaType) {
-            return Integer.valueOf(value);
-        } else if (Boolean.class.isAssignableFrom(javaType) || Boolean.TYPE == javaType) {
-            return Boolean.valueOf(value);
-        } else if (javaType.isEnum()) {
-            return getEnum(javaType, value);
-        }
-        return value;
+    protected ComparableValue valueToComparable(RawValue rawValue, Path path) {
+        rawValue.setJavaType(path.getJavaType());
+        return JavaTypeToComparableResolver.toJavaComparable(rawValue);
     }
-
-    private Comparable getEnum(Class<?> javaType, String fieldValue) {
-        return Stream.of(javaType.getEnumConstants())
-                .filter(enumValue -> enumValue.toString().equals(fieldValue))
-                .map(Comparable.class::cast)
-                .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("Undefined enum value: " + fieldValue));
-    }
-
 }

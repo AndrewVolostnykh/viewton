@@ -12,8 +12,10 @@ import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 import jakarta.persistence.metamodel.Attribute;
 import org.hibernate.Session;
+import org.hibernate.jpa.spi.NativeQueryTupleTransformer;
 import org.hibernate.query.Query;
 import org.hibernate.transform.AliasToBeanResultTransformer;
+import org.hibernate.transform.Transformers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
@@ -34,7 +36,7 @@ public class ViewtonRepository {
 
     @Autowired
     public ViewtonRepository(
-            @Value("${viewton.request.default-page-size:-1") int defaultPageSize,
+            @Value("${viewton.request.default-page-size:-1}") int defaultPageSize,
             EntityManager entityManager) {
         this.defaultPageSize = defaultPageSize;
         this.entityManager = entityManager;

@@ -6,14 +6,14 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public enum Operator {
 
-    EQUAL(""),
+    LESS_OR_EQUAL("<="),
+    GREATER_OR_EQUAL(">="),
     NOT_EQUAL("<>"),
     LESS("<"),
     GREATER(">"),
-    LESS_OR_EQUAL("<="),
-    GREATER_OR_EQUAL(">="),
     RANGE(".."),
-    OR("|");
+    OR("|"),
+    EQUAL("");
 
     @Getter
     private final String value;
