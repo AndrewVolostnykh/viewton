@@ -1,5 +1,13 @@
 package andrew.volostnykh.viewton;
 
+import andrew.volostnykh.viewton.operator.GreaterOperator;
+import andrew.volostnykh.viewton.operator.GreaterOrEqualOperator;
+import andrew.volostnykh.viewton.operator.LessOperator;
+import andrew.volostnykh.viewton.operator.LessOrEqualsOperator;
+import andrew.volostnykh.viewton.operator.NotEqualOperator;
+import andrew.volostnykh.viewton.operator.Operator;
+import andrew.volostnykh.viewton.operator.OrOperator;
+import andrew.volostnykh.viewton.operator.RangeOperator;
 import org.springframework.util.Assert;
 
 import java.util.Arrays;
@@ -126,13 +134,13 @@ public class ViewtonParamsBuilder {
         }
 
         public B lessThenOrEqual(Object value) {
-            this.value = Operator.LESS_OR_EQUAL.getValue() + value.toString();
+            this.value = new LessOrEqualsOperator().getValue() + value.toString();
             caller.registerParam(this);
             return caller;
         }
 
         public B greaterThanOrEqual(Object value) {
-            this.value = Operator.GREATER_OR_EQUAL.getValue() + value.toString();
+            this.value = new GreaterOrEqualOperator().getValue() + value.toString();
             caller.registerParam(this);
             return caller;
         }
@@ -144,25 +152,25 @@ public class ViewtonParamsBuilder {
         }
 
         public B notEqualsTo(Object to) {
-            this.value = Operator.NOT_EQUAL.getValue() + to.toString();
+            this.value = new NotEqualOperator().getValue() + to.toString();
             caller.registerParam(this);
             return caller;
         }
 
         public B between(Object lower, Object greater) {
-            this.value = lower.toString() + Operator.RANGE.getValue() + greater.toString();
+            this.value = lower.toString() + new RangeOperator().getValue() + greater.toString();
             caller.registerParam(this);
             return caller;
         }
 
         public B greater(Object than) {
-            this.value = Operator.GREATER.getValue() + than.toString();
+            this.value = new GreaterOperator().getValue() + than.toString();
             caller.registerParam(this);
             return caller;
         }
 
         public B less(Object than) {
-            this.value = Operator.LESS.getValue() + than.toString();
+            this.value = new LessOperator().getValue() + than.toString();
             caller.registerParam(this);
             return caller;
         }
@@ -213,7 +221,7 @@ public class ViewtonParamsBuilder {
         }
 
         public OrAndBuilder<B> or(String value) {
-            param.setValue(param.value() + Operator.OR.getValue() + value);
+            param.setValue(param.value() + new OrOperator().getValue() + value);
             return this;
         }
     }

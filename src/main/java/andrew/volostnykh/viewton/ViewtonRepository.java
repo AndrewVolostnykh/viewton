@@ -56,11 +56,11 @@ public class ViewtonRepository {
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         CriteriaQuery<Tuple> criteriaQuery = cb.createTupleQuery();
         Root<T> root = criteriaQuery.from(entityType);
-        WherePredicatesConverter wherePredicatesConverter = new WherePredicatesConverter(cb, root);
 
         List<String> mappingAttributes = getAttributes(query, root);
         Query<Tuple> resultQuery = Optional.of(criteriaQuery)
-                .map(q -> q.where(wherePredicatesConverter.convert(query.getRawWhereClauses()).toArray(new Predicate[0])))
+                .map(q -> q.where(WherePredicatesConverter.convert(query.getRawWhereClauses(), root, cb)
+                        .toArray(new Predicate[0])))
                 .map(q -> q.orderBy(getOrders(query.getRawOrderByes(), root, cb)))
                 .map(q -> q.multiselect(getSelections(mappingAttributes, root)).distinct(query.isDistinct()))
                 .map(q -> ((Session) entityManager.getDelegate()).createQuery(q))
@@ -84,12 +84,12 @@ public class ViewtonRepository {
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         CriteriaQuery<Long> basicQuery = cb.createQuery(Long.class);
         Root<T> root = basicQuery.from(entityClass);
-        WherePredicatesConverter wherePredicatesConverter = new WherePredicatesConverter(cb, root);
 
         Expression<Long> countSelection = query.isDistinct() ? cb.countDistinct(root) : cb.count(root);
         CriteriaQuery<Long> criteriaQuery = basicQuery
                 .select(countSelection)
-                .where(wherePredicatesConverter.convert(query.getRawWhereClauses()).toArray(new Predicate[0]));
+                .where(WherePredicatesConverter.convert(query.getRawWhereClauses(), root, cb)
+                        .toArray(new Predicate[0]));
 
         return entityManager.createQuery(criteriaQuery).getSingleResult();
     }
@@ -102,11 +102,11 @@ public class ViewtonRepository {
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         CriteriaQuery<Tuple> basicQuery = cb.createTupleQuery();
         Root<T> root = basicQuery.from(entityType);
-        WherePredicatesConverter wherePredicatesConverter = new WherePredicatesConverter(cb, root);
 
         CriteriaQuery<Tuple> criteriaQuery = basicQuery
                 .multiselect(getTotalColumns(query.getTotalAttributes(), cb, root))
-                .where(wherePredicatesConverter.convert(query.getRawWhereClauses()).toArray(new Predicate[0]));
+                .where(WherePredicatesConverter.convert(query.getRawWhereClauses(), root, cb)
+                        .toArray(new Predicate[0]));
 
         return ((Session) entityManager.getDelegate())
                 .createQuery(criteriaQuery)

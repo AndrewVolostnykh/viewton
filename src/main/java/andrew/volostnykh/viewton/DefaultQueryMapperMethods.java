@@ -34,7 +34,7 @@ public class DefaultQueryMapperMethods {
         return requestParams.entrySet()
                 .stream()
                 .filter(entry -> !PREDEFINED_ATTRIBUTES.contains(entry.getKey()))
-                .map(entry -> new RawWhereClause(entry.getKey(), entry.getValue()))
+                .map(entry -> RawWhereClauseInstance.instantiate.apply(entry.getKey(), entry.getValue()))
                 .toList();
     }
 

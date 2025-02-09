@@ -1,5 +1,8 @@
 package andrew.volostnykh.viewton;
 
+import andrew.volostnykh.viewton.operator.Operator;
+import andrew.volostnykh.viewton.operator.OperatorContext;
+import andrew.volostnykh.viewton.utils.Strings;
 import lombok.Data;
 
 import java.util.Arrays;
@@ -11,26 +14,17 @@ public class RawWhereClause {
     private final String fieldName;
     private final List<RawValue> values;
     private Operator operator;
-    private boolean ignoreCase;
 
-    public RawWhereClause(String fieldName, String rawCondition) {
-        this.ignoreCase = fieldName.startsWith("^");
-        this.fieldName = fieldName.replace("^", "");
-        this.values = Arrays.stream(Operator.values())
-                .filter(operator -> rawCondition.contains(operator.getValue()))
-                .findFirst()
-                .map(operator -> {
-                    this.operator = operator;
-                    return parseValues(rawCondition, operator);
-                })
-                .orElseThrow(() -> new IllegalArgumentException("Unable to parse condition: unknown operator specified. Condition: " + rawCondition));
-        ;
+    RawWhereClause(String fieldName, String rawCondition) {
+        this.fieldName = fieldName;
+        this.operator = OperatorContext.findApplicableOperator(rawCondition);
+        this.values = parseValues(rawCondition, operator);
     }
 
     public List<RawValue> parseValues(String filterValue, Operator operator) {
-        if (operator == Operator.RANGE) {
+        if ("..".equals(operator.getValue())) {
             return splitToRawValue(filterValue, "\\.\\.");
-        } else if (operator == Operator.OR) {
+        } else if ("|".equals(operator.getValue())) {
             return splitToRawValue(filterValue, "\\|");
         } else {
             RawValue rawValue = new RawValue();

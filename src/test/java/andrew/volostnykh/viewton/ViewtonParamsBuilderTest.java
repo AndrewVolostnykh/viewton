@@ -1,5 +1,12 @@
 package andrew.volostnykh.viewton;
 
+import andrew.volostnykh.viewton.operator.GreaterOperator;
+import andrew.volostnykh.viewton.operator.GreaterOrEqualOperator;
+import andrew.volostnykh.viewton.operator.LessOperator;
+import andrew.volostnykh.viewton.operator.LessOrEqualsOperator;
+import andrew.volostnykh.viewton.operator.NotEqualOperator;
+import andrew.volostnykh.viewton.operator.Operator;
+import andrew.volostnykh.viewton.operator.RangeOperator;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -78,7 +85,7 @@ public class ViewtonParamsBuilderTest {
                 .between(lowerDate, greaterDate)
                 .build();
 
-        assertEquals(lowerDate + Operator.RANGE.getValue() + greaterDate, params.get("date"));
+        assertEquals(lowerDate + new RangeOperator().getValue() + greaterDate, params.get("date"));
     }
 
     @Test
@@ -97,13 +104,13 @@ public class ViewtonParamsBuilderTest {
                 .test5().or(orValue).next()
                 .build();
 
-        assertEquals(lowerDate + Operator.RANGE.getValue() + greaterDate, params.get("date"));
-        assertEquals(Operator.NOT_EQUAL.getValue() + notEqualsId, params.get("id"));
+        assertEquals(lowerDate + new RangeOperator().getValue() + greaterDate, params.get("date"));
+        assertEquals(new NotEqualOperator().getValue() + notEqualsId, params.get("id"));
         assertEquals(equalsName, params.get("name"));
-        assertEquals(Operator.GREATER_OR_EQUAL.getValue() + greaterThanOrEqual, params.get("test1"));
-        assertEquals(Operator.LESS_OR_EQUAL.getValue() + lessThanOrEqual, params.get("test2"));
-        assertEquals(Operator.LESS.getValue() + lessThan, params.get("test3"));
-        assertEquals(Operator.GREATER.getValue() + greaterThan, params.get("test4"));
+        assertEquals(new GreaterOrEqualOperator().getValue() + greaterThanOrEqual, params.get("test1"));
+        assertEquals(new LessOrEqualsOperator().getValue() + lessThanOrEqual, params.get("test2"));
+        assertEquals(new LessOperator().getValue() + lessThan, params.get("test3"));
+        assertEquals(new GreaterOperator().getValue() + greaterThan, params.get("test4"));
         assertEquals(orValue, params.get("test5"));
     }
 

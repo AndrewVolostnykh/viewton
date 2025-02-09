@@ -8,7 +8,7 @@ import java.util.List;
 @Data
 @Builder
 public class ViewtonQuery {
-    private List<RawWhereClause> rawWhereClauses;
+    private List<? extends RawWhereClause> rawWhereClauses;
     private List<RawOrderBy> rawOrderByes;
     private List<String> attributes;
     private List<String> totalAttributes;

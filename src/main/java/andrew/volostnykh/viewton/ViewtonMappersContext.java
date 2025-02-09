@@ -5,9 +5,9 @@ import java.util.Map;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
-public class ViewtonExtensionContext {
+public class ViewtonMappersContext {
 
-    static Function<Map<String, String>, List<RawWhereClause>> mapWhereClauses;
+    static Function<Map<String, String>, List<? extends RawWhereClause>> mapWhereClauses;
     static Function<Map<String, String>, List<RawOrderBy>> mapOrderByes;
     static Function<Map<String, String>, List<String>> mapAttributes;
     static Function<Map<String, String>, List<String>> mapTotalAttributes;
@@ -57,7 +57,7 @@ public class ViewtonExtensionContext {
         mapAttributes = mapper;
     }
 
-    public static void assignWhereClausesMapper(Function<Map<String, String>, List<RawWhereClause>> mapper) {
+    public static void assignWhereClausesMapper(Function<Map<String, String>, List<? extends RawWhereClause>> mapper) {
         mapWhereClauses = mapper;
     }
 
