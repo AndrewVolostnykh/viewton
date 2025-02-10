@@ -2,7 +2,6 @@ package andrew.volostnykh.viewton;
 
 import andrew.volostnykh.viewton.operator.Operator;
 import andrew.volostnykh.viewton.operator.OperatorContext;
-import andrew.volostnykh.viewton.utils.Strings;
 import lombok.Data;
 
 import java.util.Arrays;
@@ -27,19 +26,25 @@ import java.util.List;
 @Data
 public class RawWhereClause {
 
-    /** The field name on which the condition is applied (e.g., "sum", "total") */
+    /**
+     * The field name on which the condition is applied (e.g., "sum", "total")
+     */
     private final String fieldName;
 
-    /** The list of values for this condition, to be compared with the field */
+    /**
+     * The list of values for this condition, to be compared with the field
+     */
     private final List<RawValue> values;
 
-    /** The operator for the condition (e.g., equals, greater than, not equals) */
+    /**
+     * The operator for the condition (e.g., equals, greater than, not equals)
+     */
     private Operator operator;
 
     /**
      * Constructs a new {@link RawWhereClause} by parsing the provided condition string.
      *
-     * @param fieldName the name of the field being filtered (e.g., "sum", "total")
+     * @param fieldName    the name of the field being filtered (e.g., "sum", "total")
      * @param rawCondition the raw condition string (e.g., "<>1000", "=1000", "|value1|value2")
      */
     RawWhereClause(String fieldName, String rawCondition) {
@@ -56,7 +61,7 @@ public class RawWhereClause {
      * if the value contains the "^" character.</p>
      *
      * @param filterValue the raw filter condition (e.g., "1000", "value1|value2", "^abc")
-     * @param operator the operator for the condition (e.g., "=", "<>", "|", "..")
+     * @param operator    the operator for the condition (e.g., "=", "<>", "|", "..")
      * @return a list of {@link RawValue} objects representing the parsed values.
      */
     public List<RawValue> parseValues(String filterValue, Operator operator) {
@@ -81,7 +86,7 @@ public class RawWhereClause {
      * Splits the filter value string based on a regular expression and creates a list of {@link RawValue} objects.
      *
      * @param filterValue the string to be split into values (e.g., "value1|value2|value3")
-     * @param splitRegex the regular expression used to split the string (e.g., "\\." or "\\|")
+     * @param splitRegex  the regular expression used to split the string (e.g., "\\." or "\\|")
      * @return a list of {@link RawValue} objects representing the individual values.
      */
     public List<RawValue> splitToRawValue(String filterValue, String splitRegex) {

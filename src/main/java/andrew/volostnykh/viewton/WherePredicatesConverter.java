@@ -66,7 +66,7 @@ public class WherePredicatesConverter {
     /**
      * Registers a new operator type and its corresponding converter function.
      *
-     * @param operator The operator class.
+     * @param operator  The operator class.
      * @param converter The function to convert the operator to a Predicate.
      */
     public static void registerConverter(
@@ -80,8 +80,8 @@ public class WherePredicatesConverter {
      * based on the provided root and criteria builder.
      *
      * @param whereClauses The list of raw where clauses to be converted into predicates.
-     * @param root The root of the entity being queried.
-     * @param cb The CriteriaBuilder used to build the predicates.
+     * @param root         The root of the entity being queried.
+     * @param cb           The CriteriaBuilder used to build the predicates.
      * @return A list of Criteria API predicates.
      */
     public static List<Predicate> convert(List<? extends RawWhereClause> whereClauses, Root root, CriteriaBuilder cb) {
@@ -98,8 +98,8 @@ public class WherePredicatesConverter {
      * Converts an equality operator to a {@link Predicate}.
      *
      * @param comparableValue The value to compare.
-     * @param path The path to the entity field.
-     * @param cb The CriteriaBuilder used to create the predicate.
+     * @param path            The path to the entity field.
+     * @param cb              The CriteriaBuilder used to create the predicate.
      * @return A Criteria API predicate representing the equality comparison.
      */
     protected static Predicate convertEquals(ComparableValue comparableValue, Path path, CriteriaBuilder cb) {
@@ -125,8 +125,8 @@ public class WherePredicatesConverter {
      * Converts a RawWhereClause with equality operator to a Predicate.
      *
      * @param clause The RawWhereClause containing the equality condition.
-     * @param path The path to the entity field.
-     * @param cb The CriteriaBuilder used to create the predicate.
+     * @param path   The path to the entity field.
+     * @param cb     The CriteriaBuilder used to create the predicate.
      * @return A Criteria API predicate representing the equality comparison.
      */
     public static Predicate convertEquals(RawWhereClause clause, Path path, CriteriaBuilder cb) {
@@ -139,8 +139,8 @@ public class WherePredicatesConverter {
      * Converts a "not equal" operator to a {@link Predicate}.
      *
      * @param clause The RawWhereClause containing the not-equal condition.
-     * @param path The path to the entity field.
-     * @param cb The CriteriaBuilder used to create the predicate.
+     * @param path   The path to the entity field.
+     * @param cb     The CriteriaBuilder used to create the predicate.
      * @return A Criteria API predicate representing the not-equal comparison.
      */
     protected static Predicate convertNotEquals(RawWhereClause clause, Path path, CriteriaBuilder cb) {
@@ -151,8 +151,8 @@ public class WherePredicatesConverter {
      * Converts a "less than" operator to a {@link Predicate}.
      *
      * @param clause The RawWhereClause containing the less-than condition.
-     * @param path The path to the entity field.
-     * @param cb The CriteriaBuilder used to create the predicate.
+     * @param path   The path to the entity field.
+     * @param cb     The CriteriaBuilder used to create the predicate.
      * @return A Criteria API predicate representing the less-than comparison.
      */
     protected static Predicate convertLess(RawWhereClause clause, Path path, CriteriaBuilder cb) {
@@ -163,8 +163,8 @@ public class WherePredicatesConverter {
      * Converts a "greater than" operator to a {@link Predicate}.
      *
      * @param clause The RawWhereClause containing the greater-than condition.
-     * @param path The path to the entity field.
-     * @param cb The CriteriaBuilder used to create the predicate.
+     * @param path   The path to the entity field.
+     * @param cb     The CriteriaBuilder used to create the predicate.
      * @return A Criteria API predicate representing the greater-than comparison.
      */
     protected static Predicate convertGreater(RawWhereClause clause, Path path, CriteriaBuilder cb) {
@@ -175,8 +175,8 @@ public class WherePredicatesConverter {
      * Converts a "less than or equal to" operator to a {@link Predicate}.
      *
      * @param clause The RawWhereClause containing the less-than-or-equal condition.
-     * @param path The path to the entity field.
-     * @param cb The CriteriaBuilder used to create the predicate.
+     * @param path   The path to the entity field.
+     * @param cb     The CriteriaBuilder used to create the predicate.
      * @return A Criteria API predicate representing the less-than-or-equal comparison.
      */
     protected static Predicate convertLessOrEquals(RawWhereClause clause, Path path, CriteriaBuilder cb) {
@@ -187,8 +187,8 @@ public class WherePredicatesConverter {
      * Converts a "greater than or equal to" operator to a {@link Predicate}.
      *
      * @param clause The RawWhereClause containing the greater-than-or-equal condition.
-     * @param path The path to the entity field.
-     * @param cb The CriteriaBuilder used to create the predicate.
+     * @param path   The path to the entity field.
+     * @param cb     The CriteriaBuilder used to create the predicate.
      * @return A Criteria API predicate representing the greater-than-or-equal comparison.
      */
     protected static Predicate convertGreaterOrEquals(RawWhereClause clause, Path path, CriteriaBuilder cb) {
@@ -199,8 +199,8 @@ public class WherePredicatesConverter {
      * Converts a range operator to a {@link Predicate}.
      *
      * @param clause The RawWhereClause containing the range condition.
-     * @param path The path to the entity field.
-     * @param cb The CriteriaBuilder used to create the predicate.
+     * @param path   The path to the entity field.
+     * @param cb     The CriteriaBuilder used to create the predicate.
      * @return A Criteria API predicate representing the range comparison.
      */
     protected static Predicate convertRange(RawWhereClause clause, Path path, CriteriaBuilder cb) {
@@ -216,8 +216,8 @@ public class WherePredicatesConverter {
      * Converts an "or" operator to a {@link Predicate}.
      *
      * @param clause The RawWhereClause containing the or condition.
-     * @param path The path to the entity field.
-     * @param cb The CriteriaBuilder used to create the predicate.
+     * @param path   The path to the entity field.
+     * @param cb     The CriteriaBuilder used to create the predicate.
      * @return A Criteria API predicate representing the "or" comparison.
      */
     protected static Predicate convertOr(RawWhereClause clause, Path path, CriteriaBuilder cb) {
@@ -232,7 +232,7 @@ public class WherePredicatesConverter {
      * Converts the first value of a RawWhereClause to a ComparableValue.
      *
      * @param clauses The RawWhereClause to convert.
-     * @param path The path to the entity field.
+     * @param path    The path to the entity field.
      * @return The first ComparableValue extracted from the clause.
      */
     protected static ComparableValue firstValueToComparable(RawWhereClause clauses, Path path) {
@@ -243,7 +243,7 @@ public class WherePredicatesConverter {
      * Converts all values of a RawWhereClause to a list of ComparableValues.
      *
      * @param clause The RawWhereClause to convert.
-     * @param path The path to the entity field.
+     * @param path   The path to the entity field.
      * @return A list of ComparableValues extracted from the clause.
      */
     protected static List<ComparableValue> valueToComparable(RawWhereClause clause, Path path) {
@@ -257,7 +257,7 @@ public class WherePredicatesConverter {
      * Converts a RawValue to a ComparableValue.
      *
      * @param rawValue The RawValue to convert.
-     * @param path The path to the entity field.
+     * @param path     The path to the entity field.
      * @return The ComparableValue for the given RawValue.
      */
     protected static ComparableValue valueToComparable(RawValue rawValue, Path path) {

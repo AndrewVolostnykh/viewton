@@ -28,53 +28,6 @@ public class ViewtonQueryBuilderTest {
     private static final String greaterThan = "444";
     private static final String orValue = "555";
 
-    static class TestView {
-
-        private Long id;
-        private String name;
-        private LocalDate date;
-        private String test1;
-        private String test2;
-        private String test3;
-        private String test4;
-        private String test5;
-
-        static class TestQueryBuilder extends ViewtonQueryBuilder {
-
-            public FilterBuilder<TestQueryBuilder> id() {
-                return param("id");
-            }
-
-            public FilterBuilder<TestQueryBuilder> name() {
-                return param("name");
-            }
-
-            public FilterBuilder<TestQueryBuilder> date() {
-                return param("date");
-            }
-
-            public FilterBuilder<TestQueryBuilder> test1() {
-                return param("test1");
-            }
-
-            public FilterBuilder<TestQueryBuilder> test2() {
-                return param("test2");
-            }
-
-            public FilterBuilder<TestQueryBuilder> test3() {
-                return param("test3");
-            }
-
-            public FilterBuilder<TestQueryBuilder> test4() {
-                return param("test4");
-            }
-
-            public FilterBuilder<TestQueryBuilder> test5() {
-                return param("test5");
-            }
-        }
-    }
-
     @Test
     @DisplayName("Single parameter")
     void testBuildValidMapWithOneFilter() {
@@ -261,6 +214,53 @@ public class ViewtonQueryBuilderTest {
         Map<String, String> params = builder.noPagination().build();
 
         assertEquals("-1", params.get("page_size"));
+    }
+
+    static class TestView {
+
+        private Long id;
+        private String name;
+        private LocalDate date;
+        private String test1;
+        private String test2;
+        private String test3;
+        private String test4;
+        private String test5;
+
+        static class TestQueryBuilder extends ViewtonQueryBuilder {
+
+            public FilterBuilder<TestQueryBuilder> id() {
+                return param("id");
+            }
+
+            public FilterBuilder<TestQueryBuilder> name() {
+                return param("name");
+            }
+
+            public FilterBuilder<TestQueryBuilder> date() {
+                return param("date");
+            }
+
+            public FilterBuilder<TestQueryBuilder> test1() {
+                return param("test1");
+            }
+
+            public FilterBuilder<TestQueryBuilder> test2() {
+                return param("test2");
+            }
+
+            public FilterBuilder<TestQueryBuilder> test3() {
+                return param("test3");
+            }
+
+            public FilterBuilder<TestQueryBuilder> test4() {
+                return param("test4");
+            }
+
+            public FilterBuilder<TestQueryBuilder> test5() {
+                return param("test5");
+            }
+        }
     }
 
 }

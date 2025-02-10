@@ -1,5 +1,7 @@
 package andrew.volostnykh.viewton.operator;
 
+import lombok.Getter;
+
 /**
  * Abstract base class representing an operator used for querying and filtering in requests.
  * <p>
@@ -8,6 +10,7 @@ package andrew.volostnykh.viewton.operator;
  * for all operator types.
  * </p>
  */
+@Getter
 public abstract class Operator {
 
     private final String value;
@@ -20,7 +23,4 @@ public abstract class Operator {
         return condition.contains(value);
     }
 
-    public String getValue() {
-        return value;
-    }
 }

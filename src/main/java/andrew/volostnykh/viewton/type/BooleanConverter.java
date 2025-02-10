@@ -2,9 +2,6 @@ package andrew.volostnykh.viewton.type;
 
 import andrew.volostnykh.viewton.ComparableValue;
 import andrew.volostnykh.viewton.RawValue;
-import andrew.volostnykh.viewton.utils.DateUtil;
-
-import java.time.LocalDate;
 
 public class BooleanConverter implements RawToJavaTypeConverter {
     @Override

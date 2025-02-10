@@ -12,10 +12,8 @@ import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 import jakarta.persistence.metamodel.Attribute;
 import org.hibernate.Session;
-import org.hibernate.jpa.spi.NativeQueryTupleTransformer;
 import org.hibernate.query.Query;
 import org.hibernate.transform.AliasToBeanResultTransformer;
-import org.hibernate.transform.Transformers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
@@ -31,7 +29,7 @@ import static java.util.stream.Collectors.toList;
  * Repository for performing dynamic queries using JPA Criteria API.
  * This repository builds and executes queries based on `ViewtonQuery` and maps the results
  * to entities with optional pagination, filtering, sorting, and aggregation.
- *
+ * <p>
  * It supports querying for entities with dynamic where clauses, custom ordering,
  * attribute selection, and provides options for counting and aggregating data.
  *
@@ -57,7 +55,7 @@ public class ViewtonRepository {
      * Constructs a new `ViewtonRepository` with the specified default page size and `EntityManager`.
      *
      * @param defaultPageSize The default page size to be used when pagination is not specified.
-     * @param entityManager The JPA `EntityManager` used to execute queries.
+     * @param entityManager   The JPA `EntityManager` used to execute queries.
      */
     @Autowired
     public ViewtonRepository(
@@ -73,8 +71,8 @@ public class ViewtonRepository {
      * to retrieve the results, along with count and totals.
      *
      * @param requestParams A map of request parameters used to build the `ViewtonQuery`.
-     * @param entityType The entity class type to query.
-     * @param <T> The entity type.
+     * @param entityType    The entity class type to query.
+     * @param <T>           The entity type.
      * @return A `ViewtonResponseDto` containing the results of the query, count, and totals.
      */
     public <T> ViewtonResponseDto<T> list(Map<String, String> requestParams, Class<T> entityType) {
@@ -90,9 +88,9 @@ public class ViewtonRepository {
     /**
      * Executes the query using the provided `ViewtonQuery` and returns a paginated list of entities.
      *
-     * @param query The `ViewtonQuery` containing the filtering, sorting, and pagination parameters.
+     * @param query      The `ViewtonQuery` containing the filtering, sorting, and pagination parameters.
      * @param entityType The entity class type to query.
-     * @param <T> The entity type.
+     * @param <T>        The entity type.
      * @return A list of entities matching the query criteria.
      */
     public <T> List<T> list(ViewtonQuery query, Class<T> entityType) {
@@ -122,9 +120,9 @@ public class ViewtonRepository {
     /**
      * Returns the count of results that match the given `ViewtonQuery`.
      *
-     * @param query The `ViewtonQuery` containing the filtering and pagination parameters.
+     * @param query       The `ViewtonQuery` containing the filtering and pagination parameters.
      * @param entityClass The entity class to query.
-     * @param <T> The entity type.
+     * @param <T>         The entity type.
      * @return The count of entities matching the query.
      */
     public <T> long count(ViewtonQuery query, Class<T> entityClass) {
@@ -148,9 +146,9 @@ public class ViewtonRepository {
     /**
      * Returns the total values for specified attributes in the given `ViewtonQuery`.
      *
-     * @param query The `ViewtonQuery` containing the total attributes and filtering parameters.
+     * @param query      The `ViewtonQuery` containing the total attributes and filtering parameters.
      * @param entityType The entity class type to query.
-     * @param <T> The entity type.
+     * @param <T>        The entity type.
      * @return The total values for the specified attributes.
      */
     public <T> T total(ViewtonQuery query, Class<T> entityType) {
@@ -182,8 +180,8 @@ public class ViewtonRepository {
      * Builds a list of `Order` clauses based on the given order by criteria.
      *
      * @param orders The list of `RawOrderBy` objects representing the ordering criteria.
-     * @param root The root entity path used for ordering.
-     * @param cb The CriteriaBuilder used to create the order expressions.
+     * @param root   The root entity path used for ordering.
+     * @param cb     The CriteriaBuilder used to create the order expressions.
      * @return A list of `Order` objects.
      */
     private List<Order> getOrders(List<RawOrderBy> orders, Root root, CriteriaBuilder cb) {
@@ -201,8 +199,8 @@ public class ViewtonRepository {
      * If no attributes are provided in the query, defaults to all attributes of the entity.
      *
      * @param query The `ViewtonQuery` containing the requested attributes.
-     * @param root The root entity path used for selecting the attributes.
-     * @param <T> The entity type.
+     * @param root  The root entity path used for selecting the attributes.
+     * @param <T>   The entity type.
      * @return A list of attribute names to be selected.
      */
     private <T> List<String> getAttributes(ViewtonQuery query, Root<T> root) {
@@ -215,8 +213,8 @@ public class ViewtonRepository {
      * Returns a list of `Expression` objects representing the selected attributes for the query.
      *
      * @param attributes The list of attribute names to be selected.
-     * @param root The root entity path used for selecting the attributes.
-     * @param <T> The entity type.
+     * @param root       The root entity path used for selecting the attributes.
+     * @param <T>        The entity type.
      * @return An array of `Expression` objects for selecting the attributes.
      */
     private <T> Expression[] getSelections(List<String> attributes, Root<T> root) {
@@ -229,7 +227,7 @@ public class ViewtonRepository {
      * Returns the default attributes for the entity if no specific attributes are requested.
      *
      * @param root The root entity path.
-     * @param <T> The entity type.
+     * @param <T>  The entity type.
      * @return A list of default attribute names.
      */
     private <T> List<String> getDefaultAttributes(Root<T> root) {
@@ -242,9 +240,9 @@ public class ViewtonRepository {
      * Retrieves the total columns (sum expressions) for the specified fields in the query.
      *
      * @param totalFields The list of total fields to be summed.
-     * @param cb The CriteriaBuilder used to build sum expressions.
-     * @param root The root entity path.
-     * @param <T> The entity type.
+     * @param cb          The CriteriaBuilder used to build sum expressions.
+     * @param root        The root entity path.
+     * @param <T>         The entity type.
      * @return An array of `Expression<Number>` representing the sum of the total fields.
      */
     @SuppressWarnings("unchecked")

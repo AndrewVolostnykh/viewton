@@ -5,7 +5,6 @@ import andrew.volostnykh.viewton.RawValue;
 import andrew.volostnykh.viewton.utils.DateUtil;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 public class LocalDateConverter implements RawToJavaTypeConverter {
     @Override

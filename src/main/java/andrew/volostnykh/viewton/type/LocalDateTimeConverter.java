@@ -4,7 +4,6 @@ import andrew.volostnykh.viewton.ComparableValue;
 import andrew.volostnykh.viewton.RawValue;
 import andrew.volostnykh.viewton.utils.DateUtil;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 public class LocalDateTimeConverter implements RawToJavaTypeConverter {

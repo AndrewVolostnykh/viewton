@@ -90,7 +90,7 @@ public class DefaultQueryMapperMethods {
     /**
      * Maps the query parameters to the page size. Uses the provided default value if not specified.
      *
-     * @param requestParams the map of query parameters.
+     * @param requestParams   the map of query parameters.
      * @param defaultPageSize the default page size if not provided.
      * @return the page size as an integer.
      */

@@ -4,7 +4,6 @@ import andrew.volostnykh.viewton.ComparableValue;
 import andrew.volostnykh.viewton.RawValue;
 
 import java.math.BigDecimal;
-import java.math.BigInteger;
 
 public class BigDecimalConverter implements RawToJavaTypeConverter {
     @Override
