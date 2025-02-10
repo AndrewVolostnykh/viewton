@@ -2,10 +2,12 @@ package andrew.volostnykh.viewton;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Default implementation for mapping query parameters from a request (e.g., URL parameters)
@@ -51,7 +53,7 @@ public class DefaultQueryMapperMethods {
     public static final String TOTAL = "total";
     public static final String FIRST_PAGE = "1";
 
-    private static final Set<String> PREDEFINED_ATTRIBUTES = Set.of(
+    private static final Set<String> PREDEFINED_ATTRIBUTES = new HashSet<>(Arrays.asList(
             PAGE,
             PAGE_SIZE,
             SORTING_FIELD,
@@ -60,7 +62,7 @@ public class DefaultQueryMapperMethods {
             COUNT,
             TOTAL,
             TOTAL_ATTRIBUTES
-    );
+    ));
 
     /**
      * Maps the query parameters to a list of raw where clauses.
@@ -74,7 +76,7 @@ public class DefaultQueryMapperMethods {
                 .stream()
                 .filter(entry -> !PREDEFINED_ATTRIBUTES.contains(entry.getKey()))
                 .map(entry -> RawWhereClauseInstance.instantiate.apply(entry.getKey(), entry.getValue()))
-                .toList();
+                .collect(Collectors.toList());
     }
 
     /**
@@ -116,7 +118,7 @@ public class DefaultQueryMapperMethods {
                     Order order = expression.startsWith("-") ? Order.DESCENDING : Order.ASCENDING;
                     return new RawOrderBy(expression.replace("-", ""), order);
                 })
-                .toList();
+                .collect(Collectors.toList());
     }
 
     /**

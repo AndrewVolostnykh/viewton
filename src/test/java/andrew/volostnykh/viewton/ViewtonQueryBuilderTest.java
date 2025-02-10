@@ -10,6 +10,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -110,8 +112,8 @@ public class ViewtonQueryBuilderTest {
 
         Map<String, String> params = builder.count()
                 .total()
-                .attributes((TestQueryBuilder thisBuilder) -> List.of(thisBuilder.id(), thisBuilder.name(), thisBuilder.test5()))
-                .totalAttributes((TestQueryBuilder thisBuilder) -> List.of(builder.test1(), builder.test2()))
+                .attributes((TestQueryBuilder thisBuilder) -> new ArrayList<>(Arrays.asList(thisBuilder.id(), thisBuilder.name(), thisBuilder.test5())))
+                .totalAttributes((TestQueryBuilder thisBuilder) -> new ArrayList<>(Arrays.asList(builder.test1(), builder.test2())))
                 .build();
 
         assertEquals("true", params.get("total"));

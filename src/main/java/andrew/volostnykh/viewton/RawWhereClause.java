@@ -5,7 +5,9 @@ import andrew.volostnykh.viewton.operator.OperatorContext;
 import lombok.Data;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * This class represents a parsed "where" clause from the query parameters in a request.
@@ -78,7 +80,8 @@ public class RawWhereClause {
                 rawValue.setValue(filterValue.replaceFirst(operator.getValue(), ""));
             }
 
-            return List.of(rawValue);
+
+            return Collections.singletonList(rawValue);
         }
     }
 
@@ -99,6 +102,6 @@ public class RawWhereClause {
                 rawValue.setValue(value);
             }
             return rawValue;
-        }).toList();
+        }).collect(Collectors.toList());
     }
 }

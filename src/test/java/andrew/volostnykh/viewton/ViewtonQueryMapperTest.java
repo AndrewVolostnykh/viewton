@@ -4,7 +4,9 @@ import andrew.volostnykh.viewton.operator.EqualOperator;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -15,18 +17,18 @@ public class ViewtonQueryMapperTest {
     @DisplayName("All params")
     void parseRequestParams_correct() {
         // given
-        Map<String, String> requestParams = Map.of(
-                "id", "1",
-                "name", "SomeName",
-                "sorting", "-id,name",
-                "page", "1",
-                "page_size", "10",
-                "attributes", "id,name",
-                "distinct", "true",
-                "count", "true",
-                "total", "true",
-                "totalAttributes", "id"
-        );
+        Map<String, String> requestParams = new HashMap<String, String>() {{
+            put("id", "1");
+            put("name", "SomeName");
+            put("sorting", "-id,name");
+            put("page", "1");
+            put("page_size", "10");
+            put("attributes", "id,name");
+            put("distinct", "true");
+            put("count", "true");
+            put("total", "true");
+            put("totalAttributes", "id");
+        }};
 
         // when
         ViewtonQuery viewtonQuery = ViewtonQueryMapper.of(requestParams, 100);
@@ -66,17 +68,11 @@ public class ViewtonQueryMapperTest {
         assertTrue(viewtonQuery.getRawWhereClauses()
                 .stream()
                 .filter(clause -> "id".equals(clause.getFieldName()))
-                .findAny()
-                .map(RawWhereClause::getValues)
-                .stream()
-                .anyMatch(values -> values.get(0).getValue().equals("1")));
+                .anyMatch(values -> values.getValues().get(0).getValue().equals("1")));
         // check name value is SomeName
         assertTrue(viewtonQuery.getRawWhereClauses()
                 .stream()
                 .filter(clause -> "name".equals(clause.getFieldName()))
-                .findAny()
-                .map(RawWhereClause::getValues)
-                .stream()
-                .anyMatch(values -> values.get(0).getValue().equals("SomeName")));
+                .anyMatch(values -> values.getValues().get(0).getValue().equals("SomeName")));
     }
 }

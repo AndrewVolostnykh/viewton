@@ -1,16 +1,16 @@
 package andrew.volostnykh.viewton;
 
 import andrew.volostnykh.viewton.dto.ViewtonResponseDto;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.Tuple;
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.CriteriaQuery;
-import jakarta.persistence.criteria.Expression;
-import jakarta.persistence.criteria.Order;
-import jakarta.persistence.criteria.Path;
-import jakarta.persistence.criteria.Predicate;
-import jakarta.persistence.criteria.Root;
-import jakarta.persistence.metamodel.Attribute;
+import javax.persistence.EntityManager;
+import javax.persistence.Tuple;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Expression;
+import javax.persistence.criteria.Order;
+import javax.persistence.criteria.Path;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+import javax.persistence.metamodel.Attribute;
 import org.hibernate.Session;
 import org.hibernate.query.Query;
 import org.hibernate.transform.AliasToBeanResultTransformer;
@@ -191,7 +191,7 @@ public class ViewtonRepository {
                     Path path = root.get(orderBy.getFieldName());
                     return orderBy.isAscending() ? cb.asc(path) : cb.desc(path);
                 })
-                .toList();
+                .collect(toList());
     }
 
     /**

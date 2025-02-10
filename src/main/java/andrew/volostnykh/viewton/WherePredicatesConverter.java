@@ -11,14 +11,15 @@ import andrew.volostnykh.viewton.operator.OrOperator;
 import andrew.volostnykh.viewton.operator.RangeOperator;
 import andrew.volostnykh.viewton.type.JavaTypeToComparableResolver;
 import andrew.volostnykh.viewton.utils.ThreeArgsFunction;
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.Path;
-import jakarta.persistence.criteria.Predicate;
-import jakarta.persistence.criteria.Root;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.Path;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * A utility class that converts a list of {@link RawWhereClause} objects to a list of {@link Predicate} objects
@@ -91,7 +92,7 @@ public class WherePredicatesConverter {
                         root.get(clause.getFieldName()),
                         cb)
                 )
-                .toList();
+                .collect(Collectors.toList());
     }
 
     /**
@@ -250,7 +251,7 @@ public class WherePredicatesConverter {
         return clause.getValues()
                 .stream()
                 .map(value -> valueToComparable(value, path))
-                .toList();
+                .collect(Collectors.toList());
     }
 
     /**
