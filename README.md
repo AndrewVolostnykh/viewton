@@ -22,6 +22,8 @@ Viewton simplifies the process of constructing queries for interacting with data
 - **Count**: Retrieve the count of entities that match the query criteria (`count(*)`).
 - **Distinct**: Get distinct values for specific fields.
 - **Summation**: Calculate the sum of numeric field values using `sum(...)`.
+- **Ignore case**: Ignores case of string entries
+- **Equals by pattern**: search for entities by not full string value entry
 
 ## Simple Usage Examples
 
@@ -29,7 +31,7 @@ Viewton simplifies the process of constructing queries for interacting with data
 
 Consider an API endpoint for retrieving payment data:
 
-`{{api-url}}/payments?page_size=50&page=1&count=true&total=true&distinct=true&attributes=currencyCode,paymentSum,rate,status&totalAttributes=paymentSum&conclusionDate=2025-01-01..2025-01-26&sorting=-conclusionDate,-id&userId=111&userEmail=someEmail@mail.com&paid=true&paymentSum>=1000`
+`{{api-url}}/payments?page_size=50&page=1&count=true&total=true&distinct=true&attributes=currencyCode,paymentSum,rate,status&totalAttributes=paymentSum&conclusionDate=2025-01-01..2025-01-26&sorting=-conclusionDate,-id&userId=111&userEmail=someEmail@mail.com&paid=true&paymentSum=>=1000&userName=Some%&authorEmail=^ignoreCaseEmail@email.com`
 
 In this example, the URL parameters demonstrate the following functionalities:
 - **Filtering**: `&userId=111&userEmail=someEmail@gmail.com&paymentSum>=1000`
@@ -39,6 +41,8 @@ In this example, the URL parameters demonstrate the following functionalities:
 - **Distinct**: `&distinct=true`
 - **Field Selection**: `&attributes=currencyCode,paymentSum,rate,status`
 - **Pagination**: `&pageSize=50&page=1` (first page, 50 records)
+- **Equals with pattern**: `&userName=Some%` analog to SQL like patterns
+- **Ignore case**: `authorEmail=^ignoreCaseEmail@email.com` ignores case of your value and DB's value
 
 ### Example 2: Using ViewtonParamsBuilder for IPC
 
@@ -49,6 +53,8 @@ Payment.ParamsBuilder()
   .userId().equalsTo(111L)
   .userEmail().equalsTo("someEmail@gmail.com")
   .paymentSum().greaterThanOrEquals(1000)
+  .userName().equalsTo('Some%')
+  .antoherEmail().ignoreCase().equalsTo('ignoreCaseEmail@email.com')
   
   .conclusionDate().descSorting()
   .id().ascSorting()
@@ -61,4 +67,4 @@ Payment.ParamsBuilder()
   .build()
 ```
 
-This example demonstrates how the same query logic can be implemented using Viewton’s API, utilizing `ParamsBuilder` to build the query components in a programmatic way.
+This example demonstrates how the same query logic can be implemented using Viewton’s API, utilizing `ViewtonQueryBuilder` to build the query components in a programmatic way.
