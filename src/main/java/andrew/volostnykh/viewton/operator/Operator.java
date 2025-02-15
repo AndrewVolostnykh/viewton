@@ -1,6 +1,14 @@
 package andrew.volostnykh.viewton.operator;
 
+import andrew.volostnykh.viewton.ComparableValue;
+import andrew.volostnykh.viewton.RawWhereClause;
+import andrew.volostnykh.viewton.type.JavaTypeToComparableResolver;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.Path;
+import jakarta.persistence.criteria.Predicate;
 import lombok.Getter;
+
+import java.util.List;
 
 /**
  * Abstract base class representing an operator used for querying and filtering in requests.
@@ -23,4 +31,19 @@ public abstract class Operator {
         return condition.contains(value);
     }
 
+    public abstract Predicate toPredicate(RawWhereClause clause, Path path, CriteriaBuilder cb);
+
+    protected List<ComparableValue> valueToComparable(RawWhereClause clause, Path path) {
+        return clause.getValues()
+                .stream()
+                .map((rawValue -> {
+                    rawValue.setJavaType(path.getJavaType());
+                    return JavaTypeToComparableResolver.toJavaComparable(rawValue);
+                }))
+                .toList();
+    }
+
+    protected ComparableValue firstValueToComparable(RawWhereClause clause, Path path) {
+        return this.valueToComparable(clause, path).get(0);
+    }
 }

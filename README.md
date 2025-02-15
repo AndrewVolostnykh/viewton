@@ -13,6 +13,9 @@ Viewton simplifies the process of constructing queries for interacting with data
 
 ## When to Use Viewton?
 
+When you need to request data from back-end using different filters. Library aggregate all
+common cases of querying data: filtering, count, sum, aggregation
+
 - **Primary Usage**: Viewton is designed for databases using Hibernate and SQL.
 - **Recommended Setup**: Using database views for optimized performance, though it works just as well with regular entities.
 

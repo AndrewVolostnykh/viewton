@@ -13,24 +13,42 @@ import java.util.List;
  */
 public class OperatorContext {
 
-    private static final List<Operator> DEFAULT_OPERATORS = new ArrayList<Operator>();
+    /**
+     * The list of registered operators in the library. Order of operators is important
+     * because some of them could be similar to another one, so it can be a conflict.
+     * For instance if we will set EqualOperator as a first, it will be applied to every parsed conditions,
+     * because all of them contain empty string. See {@link OperatorContext#findApplicableOperator(String)}
+     */
+    private static final List<Operator> OPERATORS = new ArrayList<Operator>();
 
     static {
-        DEFAULT_OPERATORS.add(new LessOrEqualsOperator());
-        DEFAULT_OPERATORS.add(new GreaterOrEqualOperator());
-        DEFAULT_OPERATORS.add(new NotEqualOperator());
-        DEFAULT_OPERATORS.add(new LessOperator());
-        DEFAULT_OPERATORS.add(new GreaterOperator());
-        DEFAULT_OPERATORS.add(new RangeOperator());
-        DEFAULT_OPERATORS.add(new OrOperator());
-        DEFAULT_OPERATORS.add(new EqualOperator());
+        OPERATORS.add(new LessOrEqualsOperator());
+        OPERATORS.add(new GreaterOrEqualOperator());
+        OPERATORS.add(new NotEqualOperator());
+        OPERATORS.add(new LessOperator());
+        OPERATORS.add(new GreaterOperator());
+        OPERATORS.add(new RangeOperator());
+        OPERATORS.add(new OrOperator());
+        OPERATORS.add(new EqualOperator());
     }
 
     /**
      * Adds new custom operator to the context.
+     *
+     * @param operator the operator to be registered.
+     * @param priority the index of operator in list. Represents priority searching operator in list
      */
-    public static void registerOperator(Operator operator) {
-        DEFAULT_OPERATORS.add(operator);
+    public static void registerOperator(Operator operator, int priority) {
+        OPERATORS.add(priority, operator);
+    }
+
+    /**
+     * Remove operator from context if it should be replaced or do not need in context of application.
+     *
+     * @param index index of operator in {@link OperatorContext#OPERATORS}
+     */
+    public static void removeOperator(int index) {
+        OPERATORS.remove(index);
     }
 
     /**
@@ -45,7 +63,7 @@ public class OperatorContext {
      * @throws IllegalArgumentException If no operator is found that matches the condition.
      */
     public static Operator findApplicableOperator(String condition) {
-        return DEFAULT_OPERATORS.stream()
+        return OPERATORS.stream()
                 .filter(operator -> operator.contains(condition))
                 .findFirst()
                 .orElseThrow(() -> new IllegalArgumentException(
