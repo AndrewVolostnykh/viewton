@@ -7,6 +7,23 @@ ignored if not specified.
 
 > See [guide](docs/GUIDE.md) and [coming features](docs/COMING_SOON.md)
 
+## How to use it in application?
+
+Add the source code or dependency to your project 
+and annotate the root application class or an appropriate configuration class with `@EnableViewton`.
+
+Example:
+```java
+import config.com.viewton.EnableViewton;
+import org.springframework.context.annotation.Configuration;
+
+@EnableViewton
+@Configuration
+public class SomeConfiguration {
+    ...
+}
+```
+
 ## How Does Viewton Work?
 
 Viewton simplifies the process of constructing queries for interacting with databases by dynamically creating the necessary components like filters, pagination, sorting, and field selection. It is designed primarily for use with Hibernate and SQL databases, and it is most effective when used with database views, given their optimization potential. However, the library is also flexible enough to work with regular entities.
@@ -37,13 +54,13 @@ common cases of querying data: filtering, count, sum, aggregation
 
 Consider an API endpoint for retrieving payment data:
 
-`{{api-url}}/payments?page_size=50&page=1&count=true&total=true&distinct=true&attributes=currencyCode,paymentSum,rate,status&totalAttributes=paymentSum&conclusionDate=2025-01-01..2025-01-26&sorting=-conclusionDate,-id&userId=111&userEmail=someEmail@mail.com&paid=true&paymentSum=>=1000&userName=Some%&authorEmail=^ignoreCaseEmail@email.com`
+`{{api-url}}/payments?page_size=50&page=1&count=true&distinct=true&attributes=currencyCode,paymentSum,rate,status&totalAttributes=paymentSum&conclusionDate=2025-01-01..2025-01-26&sorting=-conclusionDate,-id&userId=111&userEmail=someEmail@mail.com&paid=true&paymentSum=>=1000&userName=Some%&authorEmail=^ignoreCaseEmail@email.com`
 
 In this example, the URL parameters demonstrate the following functionalities:
 
 - **Filtering**: `&userId=111&userEmail=someEmail@gmail.com&paymentSum>=1000`
 - **Sorting**: `&sorting=-conclusionDate,-id`
-- **Summing**: `&total=true&totalAttributes=paymentSum`
+- **Summing**: `&totalAttributes=paymentSum`
 - **Counting**: `&count=true`
 - **Distinct**: `&distinct=true`
 - **Field Selection**: `&attributes=currencyCode,paymentSum,rate,status`
@@ -67,7 +84,7 @@ Payment.ParamsBuilder()
   .conclusionDate().descSorting()
   .id().ascSorting()
   
-  .total().count().distinct()
+  .count().distinct()
   .attributes((ParamsBuilder builder) -> List.of(builder.currencyCode(), builder.paymentSum(), builder.rate(), builder.status()))
   .totalAttributes((ParamsBuilder builder) -> List.of(builder.paymentSum))
   
