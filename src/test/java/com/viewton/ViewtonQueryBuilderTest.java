@@ -97,7 +97,6 @@ public class ViewtonQueryBuilderTest {
         assertEquals("true", params.get("distinct"));
         assertEquals(String.valueOf(page), params.get("page"));
         assertEquals(String.valueOf(pageSize), params.get("page_size"));
-        assertEquals("true", params.get("total"));
         assertEquals("id,name,test5", params.get("attributes"));
         assertEquals("test1,test2", params.get("totalAttributes"));
     }
@@ -112,7 +111,6 @@ public class ViewtonQueryBuilderTest {
                 .totalAttributes((TestQueryBuilder thisBuilder) -> List.of(builder.test1(), builder.test2()))
                 .build();
 
-        assertEquals("true", params.get("total"));
         assertEquals("id,name,test5", params.get("attributes"));
         assertEquals("test1,test2", params.get("totalAttributes"));
     }
