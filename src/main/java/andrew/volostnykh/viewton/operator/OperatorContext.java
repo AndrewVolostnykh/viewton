@@ -1,5 +1,8 @@
 package andrew.volostnykh.viewton.operator;
 
+import andrew.volostnykh.viewton.lang.NoneThreadSafe;
+import lombok.NonNull;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -38,7 +41,8 @@ public class OperatorContext {
      * @param operator the operator to be registered.
      * @param priority the index of operator in list. Represents priority searching operator in list
      */
-    public static void registerOperator(Operator operator, int priority) {
+    @NoneThreadSafe
+    public static void registerOperator(@NonNull Operator operator, int priority) {
         OPERATORS.add(priority, operator);
     }
 
@@ -47,6 +51,7 @@ public class OperatorContext {
      *
      * @param index index of operator in {@link OperatorContext#OPERATORS}
      */
+    @NoneThreadSafe
     public static void removeOperator(int index) {
         OPERATORS.remove(index);
     }

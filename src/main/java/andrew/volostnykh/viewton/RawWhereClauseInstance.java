@@ -1,5 +1,7 @@
 package andrew.volostnykh.viewton;
 
+import andrew.volostnykh.viewton.lang.NoneThreadSafe;
+
 import java.util.function.BiFunction;
 
 /**
@@ -17,5 +19,6 @@ import java.util.function.BiFunction;
  */
 public class RawWhereClauseInstance {
 
+    @NoneThreadSafe
     public static BiFunction<String, String, RawWhereClause> instantiate = RawWhereClause::new;
 }

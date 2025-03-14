@@ -2,6 +2,7 @@ package andrew.volostnykh.viewton.type;
 
 import andrew.volostnykh.viewton.ComparableValue;
 import andrew.volostnykh.viewton.RawValue;
+import andrew.volostnykh.viewton.lang.NoneThreadSafe;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -44,8 +45,19 @@ public class JavaTypeToComparableResolver {
      * @param converter The {@link RawToJavaTypeConverter} to register.
      * @see RawToJavaTypeConverter
      */
+    @NoneThreadSafe
     public static void registerConverter(RawToJavaTypeConverter converter) {
         DATA_TYPE_CONVERTERS.add(converter);
+    }
+
+    /**
+     * Remove data type converter from list by index.
+     * It is important to remove by index because in some cases
+     * order of converters in list is important.
+     */
+    @NoneThreadSafe
+    public static void removeConverter(int index) {
+        DATA_TYPE_CONVERTERS.remove(index);
     }
 
     /**

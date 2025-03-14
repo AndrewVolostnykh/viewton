@@ -1,5 +1,7 @@
 package andrew.volostnykh.viewton;
 
+import andrew.volostnykh.viewton.lang.NoneThreadSafe;
+
 import java.util.List;
 import java.util.Map;
 import java.util.function.BiFunction;
@@ -44,38 +46,47 @@ public class ViewtonMappersContext {
         isTotal = DefaultQueryMapperMethods::isTotal;
     }
 
+    @NoneThreadSafe
     public static void assignPageSizeMapper(BiFunction<Map<String, String>, Integer, Integer> mapper) {
         mapPageSize = mapper;
     }
 
+    @NoneThreadSafe
     public static void assignIsTotalMapper(Function<Map<String, String>, Boolean> mapper) {
         isTotal = mapper;
     }
 
+    @NoneThreadSafe
     public static void assignIsCountMapper(Function<Map<String, String>, Boolean> mapper) {
         isCount = mapper;
     }
 
+    @NoneThreadSafe
     public static void assignIsDistinctMapper(Function<Map<String, String>, Boolean> mapper) {
         isDistinct = mapper;
     }
 
+    @NoneThreadSafe
     public static void assignPageMapper(Function<Map<String, String>, Integer> mapper) {
         mapPage = mapper;
     }
 
+    @NoneThreadSafe
     public static void assignTotalAttributesMapper(Function<Map<String, String>, List<String>> mapper) {
         mapTotalAttributes = mapper;
     }
 
+    @NoneThreadSafe
     public static void assignAttributesMapper(Function<Map<String, String>, List<String>> mapper) {
         mapAttributes = mapper;
     }
 
+    @NoneThreadSafe
     public static void assignWhereClausesMapper(Function<Map<String, String>, List<? extends RawWhereClause>> mapper) {
         mapWhereClauses = mapper;
     }
 
+    @NoneThreadSafe
     public static void assignOrderByMapper
             (Function<Map<String, String>, List<RawOrderBy>> mapper) {
         mapOrderByes = mapper;
