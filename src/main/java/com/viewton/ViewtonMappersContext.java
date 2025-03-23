@@ -27,7 +27,7 @@ public class ViewtonMappersContext {
     static Function<Map<String, String>, List<? extends RawWhereClause>> mapWhereClauses;
     static Function<Map<String, String>, List<RawOrderBy>> mapOrderByes;
     static Function<Map<String, String>, List<String>> mapAttributes;
-    static Function<Map<String, String>, List<String>> mapTotalAttributes;
+    static Function<Map<String, String>, List<String>> mapSumAttributes;
     static Function<Map<String, String>, Integer> mapPage;
     static BiFunction<Map<String, String>, Integer, Integer> mapPageSize;
     static Function<Map<String, String>, Boolean> isDistinct;
@@ -40,7 +40,7 @@ public class ViewtonMappersContext {
         mapPage = DefaultQueryMapperMethods::mapPage;
         mapPageSize = DefaultQueryMapperMethods::mapPageSize;
         mapAttributes = DefaultQueryMapperMethods::mapAttributes;
-        mapTotalAttributes = DefaultQueryMapperMethods::mapTotalAttributes;
+        mapSumAttributes = DefaultQueryMapperMethods::mapSumAttributes;
         isDistinct = DefaultQueryMapperMethods::isDistinct;
         isCount = DefaultQueryMapperMethods::isCount;
         isSum = DefaultQueryMapperMethods::isSum;
@@ -73,7 +73,7 @@ public class ViewtonMappersContext {
 
     @NoneThreadSafe
     public static void assignTotalAttributesMapper(Function<Map<String, String>, List<String>> mapper) {
-        mapTotalAttributes = mapper;
+        mapSumAttributes = mapper;
     }
 
     @NoneThreadSafe

@@ -133,7 +133,7 @@ public class DefaultQueryMapperMethods {
      * @param requestParams the map of query parameters.
      * @return a list of total attributes.
      */
-    public static List<String> mapTotalAttributes(Map<String, String> requestParams) {
+    public static List<String> mapSumAttributes(Map<String, String> requestParams) {
         return mapAttributes(requestParams, SUM_ATTRIBUTES);
     }
 

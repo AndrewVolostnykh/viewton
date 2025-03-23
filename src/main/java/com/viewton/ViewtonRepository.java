@@ -152,7 +152,7 @@ public class ViewtonRepository {
      * @return The total values for the specified attributes.
      */
     public <T> T sum(ViewtonQuery query, Class<T> entityType) {
-        if (query.doNotTotals()) {
+        if (query.doNotSum()) {
             return null;
         }
 
@@ -161,7 +161,7 @@ public class ViewtonRepository {
         Root<T> root = basicQuery.from(entityType);
 
         CriteriaQuery<Tuple> criteriaQuery = basicQuery
-                .multiselect(getTotalColumns(query.getTotalAttributes(), cb, root))
+                .multiselect(getTotalColumns(query.getSum(), cb, root))
                 .where(WherePredicatesConverter.convert(query.getRawWhereClauses(), root, cb)
                         .toArray(new Predicate[0]));
 
@@ -170,7 +170,7 @@ public class ViewtonRepository {
                 .uniqueResultOptional()
                 .map(Tuple::toArray)
                 .map(tuples -> new AliasToBeanResultTransformer(entityType).transformTuple(
-                        tuples, query.getTotalAttributes().toArray(new String[0]))
+                        tuples, query.getSum().toArray(new String[0]))
                 )
                 .map(entityType::cast)
                 .get();

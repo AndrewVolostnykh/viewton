@@ -3,7 +3,6 @@
 ## Selecting
 
 ### Exact fields
-### Totals
 ### Count
 ### Distinct
 
@@ -18,6 +17,13 @@
 ### Less or Equals to
 ### Or
 ### Range
+
+## Aggregate functions
+### Sum
+### Min
+### Max
+### Avg
+### Group by
 
 ## Pagination
 

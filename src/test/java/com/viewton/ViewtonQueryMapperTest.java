@@ -39,8 +39,8 @@ public class ViewtonQueryMapperTest {
         assertEquals(2, viewtonQuery.getRawWhereClauses().size());
         assertEquals(2, viewtonQuery.getAttributes().size());
         assertEquals(2, viewtonQuery.getRawOrderByes().size());
-        assertEquals(1, viewtonQuery.getTotalAttributes().size());
-        assertTrue(viewtonQuery.getTotalAttributes().stream().anyMatch(value -> value.equals("id")));
+        assertEquals(1, viewtonQuery.getSum().size());
+        assertTrue(viewtonQuery.getSum().stream().anyMatch(value -> value.equals("id")));
         // check name field order equals DESCENDING
         assertTrue(viewtonQuery.getRawOrderByes()
                 .stream()

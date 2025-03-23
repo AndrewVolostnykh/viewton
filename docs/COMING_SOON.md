@@ -9,6 +9,7 @@ The list of features will be implemented near future.
 - [x] JavaScript builder
 - [x] Hibernate 5 release
 - [ ] Aggregate functions
+- [ ] Concurrent mode
 - [ ] Performance test for comparison Spring's queries, native queries and Viewton
 - [ ] MdBook - full documentation of code
 - [ ] Request validator (exclude fields, max page size, etc)

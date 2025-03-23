@@ -33,9 +33,8 @@ public class ViewtonQueryMapper {
                 .page(ViewtonMappersContext.mapPage.apply(requestParams))
                 .pageSize(ViewtonMappersContext.mapPageSize.apply(requestParams, defaultPageSize))
                 .attributes(ViewtonMappersContext.mapAttributes.apply(requestParams))
-                .totalAttributes(ViewtonMappersContext.mapTotalAttributes.apply(requestParams))
+                .sum(ViewtonMappersContext.mapSumAttributes.apply(requestParams))
                 .distinct(ViewtonMappersContext.isDistinct.apply(requestParams))
-                .sum(ViewtonMappersContext.isSum.apply(requestParams))
                 .count(ViewtonMappersContext.isCount.apply(requestParams))
                 .build();
     }

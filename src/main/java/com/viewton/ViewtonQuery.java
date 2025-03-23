@@ -24,19 +24,21 @@ public class ViewtonQuery {
     private List<? extends RawWhereClause> rawWhereClauses;
     private List<RawOrderBy> rawOrderByes;
     private List<String> attributes;
-    private List<String> totalAttributes;
+    private List<String> sum;
     private int pageSize;
     private int page;
     private boolean count;
     private boolean distinct;
-    private boolean sum;
 
     public boolean doNotCount() {
         return !count;
     }
 
-    public boolean doNotTotals() {
-        return !sum;
+    public boolean doNotSum() {
+        return !isSum();
+    }
+    public boolean isSum() {
+        return sum != null && !sum.isEmpty();
     }
 
     // nature SQL offset
