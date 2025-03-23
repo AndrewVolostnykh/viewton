@@ -1,4 +1,4 @@
-# Viewton Library [![Java CI with Maven](https://github.com/AndrewVolostnykh/viewton/actions/workflows/maven.yml/badge.svg?branch=main)](https://github.com/AndrewVolostnykh/viewton/actions/workflows/maven.yml)
+# Viewton Library [![Unit Tests](https://github.com/AndrewVolostnykh/viewton/actions/workflows/maven.yml/badge.svg?branch=main)](https://github.com/AndrewVolostnykh/viewton/actions/workflows/maven.yml)
 
 Viewton is a library designed for extracting data from databases by dynamically generating queries. It significantly
 simplifies data retrieval operations, freeing the code from the need to manually construct complex queries involving
