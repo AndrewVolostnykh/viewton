@@ -45,7 +45,7 @@ public class DefaultQueryMapperMethods {
     public static final String PAGE_SIZE = "page_size";
     public static final String SORTING_FIELD = "sorting";
     public static final String ATTRIBUTES = "attributes";
-    public static final String TOTAL_ATTRIBUTES = "totalAttributes";
+    public static final String SUM_ATTRIBUTES = "sum";
     public static final String DISTINCT = "distinct";
     public static final String COUNT = "count";
     public static final String FIRST_PAGE = "1";
@@ -57,7 +57,7 @@ public class DefaultQueryMapperMethods {
             ATTRIBUTES,
             DISTINCT,
             COUNT,
-            TOTAL_ATTRIBUTES
+            SUM_ATTRIBUTES
     );
 
     /**
@@ -134,7 +134,7 @@ public class DefaultQueryMapperMethods {
      * @return a list of total attributes.
      */
     public static List<String> mapTotalAttributes(Map<String, String> requestParams) {
-        return mapAttributes(requestParams, TOTAL_ATTRIBUTES);
+        return mapAttributes(requestParams, SUM_ATTRIBUTES);
     }
 
     /**
@@ -176,7 +176,7 @@ public class DefaultQueryMapperMethods {
      * @param requestParams the map of query parameters.
      * @return {@code true} if total is requested, otherwise {@code false}.
      */
-    public static boolean isTotal(Map<String, String> requestParams) {
-        return requestParams.containsKey(TOTAL_ATTRIBUTES) && requestParams.get(TOTAL_ATTRIBUTES) != null;
+    public static boolean isSum(Map<String, String> requestParams) {
+        return requestParams.containsKey(SUM_ATTRIBUTES) && requestParams.get(SUM_ATTRIBUTES) != null;
     }
 }

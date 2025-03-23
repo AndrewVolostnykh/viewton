@@ -35,7 +35,7 @@ public class ViewtonQueryMapper {
                 .attributes(ViewtonMappersContext.mapAttributes.apply(requestParams))
                 .totalAttributes(ViewtonMappersContext.mapTotalAttributes.apply(requestParams))
                 .distinct(ViewtonMappersContext.isDistinct.apply(requestParams))
-                .total(ViewtonMappersContext.isTotal.apply(requestParams))
+                .sum(ViewtonMappersContext.isSum.apply(requestParams))
                 .count(ViewtonMappersContext.isCount.apply(requestParams))
                 .build();
     }

@@ -80,7 +80,7 @@ public class ViewtonRepository {
 
         return new ViewtonResponseDto<>(
                 list(viewtonQuery, entityType),
-                total(viewtonQuery, entityType),
+                sum(viewtonQuery, entityType),
                 count(viewtonQuery, entityType)
         );
     }
@@ -151,7 +151,7 @@ public class ViewtonRepository {
      * @param <T>        The entity type.
      * @return The total values for the specified attributes.
      */
-    public <T> T total(ViewtonQuery query, Class<T> entityType) {
+    public <T> T sum(ViewtonQuery query, Class<T> entityType) {
         if (query.doNotTotals()) {
             return null;
         }

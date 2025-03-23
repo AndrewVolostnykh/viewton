@@ -24,7 +24,7 @@ public class ViewtonQueryMapperTest {
                 "attributes", "id,name",
                 "distinct", "true",
                 "count", "true",
-                "totalAttributes", "id"
+                "sum", "id"
         );
 
         // when
@@ -33,7 +33,7 @@ public class ViewtonQueryMapperTest {
         // then
         assertTrue(viewtonQuery.isDistinct());
         assertTrue(viewtonQuery.isCount());
-        assertTrue(viewtonQuery.isTotal());
+        assertTrue(viewtonQuery.isSum());
         assertEquals(10, viewtonQuery.getPageSize());
         assertEquals(0, viewtonQuery.getPage());
         assertEquals(2, viewtonQuery.getRawWhereClauses().size());

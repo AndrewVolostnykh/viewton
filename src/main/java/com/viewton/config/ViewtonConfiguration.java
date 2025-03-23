@@ -7,7 +7,7 @@ import org.springframework.context.annotation.Configuration;
  * Configuration which extends component scan for spring context.
  */
 @Configuration
-@ComponentScan("andrew.volostnykh.viewton")
+@ComponentScan("com.viewton")
 public class ViewtonConfiguration {
 
 }

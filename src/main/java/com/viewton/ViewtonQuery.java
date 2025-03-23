@@ -29,14 +29,14 @@ public class ViewtonQuery {
     private int page;
     private boolean count;
     private boolean distinct;
-    private boolean total;
+    private boolean sum;
 
     public boolean doNotCount() {
         return !count;
     }
 
     public boolean doNotTotals() {
-        return !total;
+        return !sum;
     }
 
     // nature SQL offset

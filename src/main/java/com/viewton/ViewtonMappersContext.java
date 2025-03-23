@@ -32,7 +32,7 @@ public class ViewtonMappersContext {
     static BiFunction<Map<String, String>, Integer, Integer> mapPageSize;
     static Function<Map<String, String>, Boolean> isDistinct;
     static Function<Map<String, String>, Boolean> isCount;
-    static Function<Map<String, String>, Boolean> isTotal;
+    static Function<Map<String, String>, Boolean> isSum;
 
     static {
         mapWhereClauses = DefaultQueryMapperMethods::mapRawWhereClauses;
@@ -43,7 +43,7 @@ public class ViewtonMappersContext {
         mapTotalAttributes = DefaultQueryMapperMethods::mapTotalAttributes;
         isDistinct = DefaultQueryMapperMethods::isDistinct;
         isCount = DefaultQueryMapperMethods::isCount;
-        isTotal = DefaultQueryMapperMethods::isTotal;
+        isSum = DefaultQueryMapperMethods::isSum;
     }
 
     @NoneThreadSafe
@@ -52,8 +52,8 @@ public class ViewtonMappersContext {
     }
 
     @NoneThreadSafe
-    public static void assignIsTotalMapper(Function<Map<String, String>, Boolean> mapper) {
-        isTotal = mapper;
+    public static void assignIsSumMapper(Function<Map<String, String>, Boolean> mapper) {
+        isSum = mapper;
     }
 
     @NoneThreadSafe
