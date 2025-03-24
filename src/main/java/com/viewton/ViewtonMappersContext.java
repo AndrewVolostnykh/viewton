@@ -33,6 +33,7 @@ public class ViewtonMappersContext {
     static Function<Map<String, String>, Boolean> isDistinct;
     static Function<Map<String, String>, Boolean> isCount;
     static Function<Map<String, String>, Boolean> isSum;
+    static Function<Map<String, String>, Boolean> isConcurrent;
 
     static {
         mapWhereClauses = DefaultQueryMapperMethods::mapRawWhereClauses;
