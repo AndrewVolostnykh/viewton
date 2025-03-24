@@ -1,5 +1,7 @@
 package com.viewton;
 
+import com.viewton.concurrent.TransactionHandler;
+import com.viewton.concurrent.ViewtonExecutorService;
 import com.viewton.dto.ViewtonResponseDto;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Tuple;
@@ -11,6 +13,7 @@ import jakarta.persistence.criteria.Path;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 import jakarta.persistence.metamodel.Attribute;
+import lombok.SneakyThrows;
 import org.hibernate.Session;
 import org.hibernate.query.Query;
 import org.hibernate.transform.AliasToBeanResultTransformer;
@@ -22,6 +25,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Future;
 
 import static java.util.stream.Collectors.toList;
 
@@ -50,6 +55,8 @@ public class ViewtonRepository {
 
     private final int defaultPageSize;
     private final EntityManager entityManager;
+    private final ViewtonExecutorService executorService;
+    private final TransactionHandler transactionHandler;
 
     /**
      * Constructs a new `ViewtonRepository` with the specified default page size and `EntityManager`.
@@ -60,9 +67,13 @@ public class ViewtonRepository {
     @Autowired
     public ViewtonRepository(
             @Value("${viewton.request.default-page-size:-1}") int defaultPageSize,
-            EntityManager entityManager) {
+            EntityManager entityManager,
+            ViewtonExecutorService executorService,
+            TransactionHandler transactionHandler) {
         this.defaultPageSize = defaultPageSize;
         this.entityManager = entityManager;
+        this.executorService = executorService;
+        this.transactionHandler = transactionHandler;
     }
 
     /**
@@ -78,12 +89,62 @@ public class ViewtonRepository {
     public <T> ViewtonResponseDto<T> list(Map<String, String> requestParams, Class<T> entityType) {
         ViewtonQuery viewtonQuery = ViewtonQueryMapper.of(requestParams, defaultPageSize);
 
+        if (viewtonQuery.isConcurrentMode()) {
+            return listConcurrent(requestParams, entityType);
+        }
+
         return new ViewtonResponseDto<>(
                 list(viewtonQuery, entityType),
                 sum(viewtonQuery, entityType),
                 count(viewtonQuery, entityType)
         );
     }
+
+    /**
+     * Returns a paginated response of entities based on the provided request parameters.
+     * The method builds a `ViewtonQuery` from the request parameters and executes the query
+     * to retrieve the results, along with count and totals.
+     *
+     * @param requestParams A map of request parameters used to build the `ViewtonQuery`.
+     * @param entityType    The entity class type to query.
+     * @param <T>           The entity type.
+     * @return A `ViewtonResponseDto` containing the results of the query, count, and totals.
+     */
+    public <T> ViewtonResponseDto<T> listConcurrent(Map<String, String> requestParams, Class<T> entityType) {
+        ViewtonQuery viewtonQuery = ViewtonQueryMapper.of(requestParams, defaultPageSize);
+//        Future<List<T>> list = executorService.supply(() -> list(viewtonQuery, entityType));
+        Future<List<T>> list = CompletableFuture.supplyAsync(() -> transactionHandler.doInNewTransaction(() -> list(viewtonQuery, entityType)));
+        Future<Long> count = null;
+        Future<T> sum = null;
+        if (viewtonQuery.isCount()) {
+//            count = executorService.supply(() -> count(viewtonQuery, entityType));
+            count = CompletableFuture.supplyAsync(() -> transactionHandler.doInNewTransaction(() -> count(viewtonQuery, entityType)));
+        }
+        if (viewtonQuery.isSum()) {
+//            sum = executorService.supply(() -> sum(viewtonQuery, entityType));
+            sum = CompletableFuture.supplyAsync(() -> transactionHandler.doInNewTransaction(() -> sum(viewtonQuery, entityType)));
+        }
+
+        return getResult(list, count, sum);
+    }
+
+    @SneakyThrows
+    private <T> ViewtonResponseDto<T> getResult(Future<List<T>> list,
+                                                Future<Long> count,
+                                                Future<T> sum) {
+        Long countResult = null;
+        T totalResult = null;
+        if (count != null) {
+            countResult = count.get();
+        }
+
+        if (sum != null) {
+            totalResult = sum.get();
+        }
+
+        return new ViewtonResponseDto<>(list.get(), totalResult, countResult);
+    }
+
 
     /**
      * Executes the query using the provided `ViewtonQuery` and returns a paginated list of entities.

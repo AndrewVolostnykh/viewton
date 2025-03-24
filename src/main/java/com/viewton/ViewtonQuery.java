@@ -29,6 +29,7 @@ public class ViewtonQuery {
     private int page;
     private boolean count;
     private boolean distinct;
+    private boolean concurrentMode;
 
     public boolean doNotCount() {
         return !count;

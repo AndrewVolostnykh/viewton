@@ -49,6 +49,7 @@ public class DefaultQueryMapperMethods {
     public static final String DISTINCT = "distinct";
     public static final String COUNT = "count";
     public static final String FIRST_PAGE = "1";
+    public static final String CONCURRENT_MODE = "concurrent_mode";
 
     private static final Set<String> PREDEFINED_ATTRIBUTES = Set.of(
             PAGE,
@@ -57,7 +58,8 @@ public class DefaultQueryMapperMethods {
             ATTRIBUTES,
             DISTINCT,
             COUNT,
-            SUM_ATTRIBUTES
+            SUM_ATTRIBUTES,
+            CONCURRENT_MODE
     );
 
     /**
@@ -178,5 +180,15 @@ public class DefaultQueryMapperMethods {
      */
     public static boolean isSum(Map<String, String> requestParams) {
         return requestParams.containsKey(SUM_ATTRIBUTES) && requestParams.get(SUM_ATTRIBUTES) != null;
+    }
+
+    /**
+     * Determines if the query parameters indicate that concurrent mode enabled.
+     *
+     * @param requestParams the map of query parameters.
+     * @return {@code true} if total is requested, otherwise {@code false}.
+     */
+    public static boolean isConcurrent(Map<String, String> requestParams) {
+        return requestParams.containsKey(CONCURRENT_MODE);
     }
 }
