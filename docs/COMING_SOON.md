@@ -9,6 +9,7 @@ The list of features will be implemented near future.
 - [x] JavaScript builder
 - [x] Hibernate 5 release
 - [ ] Aggregate functions
+- [ ] Only count but not select entities
 - [ ] Concurrent mode
 - [ ] Performance test for comparison Spring's queries, native queries and Viewton
 - [ ] MdBook - full documentation of code
