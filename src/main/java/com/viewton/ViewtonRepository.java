@@ -21,7 +21,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
-import org.yaml.snakeyaml.util.ArrayUtils;
 
 import java.util.Arrays;
 import java.util.List;
@@ -218,7 +217,7 @@ public class ViewtonRepository {
                 .stream()
                 .map(Tuple::toArray)
                 .map(tuples -> new AliasToBeanResultTransformer(entityType).transformTuple(
-                        tuples, query.getAvg().getAllFields().toArray(new String[0]))
+                        tuples, query.getAvg().getAllFields(entityType).toArray(new String[0]))
                 )
                 .map(entityType::cast)
                 .collect(Collectors.toList());

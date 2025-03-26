@@ -1,5 +1,6 @@
 package com.viewton.dto;
 
+import com.viewton.utils.ViewtonReflections;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
@@ -13,7 +14,8 @@ public class AvgAttributes {
     private List<String> attributes;
     private List<String> groupByAttributes;
 
-    public List<String> getAllFields() {
+    public List<String> getAllFields(Class<?> entityType) {
+        List<String> attributes = ViewtonReflections.getAvgAliases(this.attributes, entityType);
         if (groupByAttributes == null) {
             return attributes;
         }
