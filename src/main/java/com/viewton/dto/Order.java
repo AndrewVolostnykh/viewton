@@ -1,4 +1,4 @@
-package com.viewton;
+package com.viewton.dto;
 
 /**
  * Enum representing the order in which results should be sorted.

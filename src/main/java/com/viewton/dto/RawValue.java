@@ -1,5 +1,6 @@
-package com.viewton;
+package com.viewton.dto;
 
+import com.viewton.RawWhereClause;
 import lombok.Data;
 
 /**

@@ -1,4 +1,4 @@
-package com.viewton;
+package com.viewton.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

@@ -1,11 +1,18 @@
 package com.viewton;
 
+import com.viewton.dto.AvgAttributes;
+import com.viewton.dto.Order;
+import com.viewton.dto.RawOrderBy;
+import com.viewton.utils.ArraysUtil;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Default implementation for mapping query parameters from a request (e.g., URL parameters)
@@ -40,6 +47,8 @@ import java.util.Set;
  * </pre>
  */
 public class DefaultQueryMapperMethods {
+    public static final Pattern AVG_ATTRIBUTES_PATTERN = Pattern.compile(".*?(?=\\[|$)");
+    public static final Pattern GROU_BY_PATTERN = Pattern.compile("\\[(.*)\\]");
     public static final String ATTRIBUTES_SEPARATOR = ",";
     public static final String PAGE = "page";
     public static final String PAGE_SIZE = "page_size";
@@ -49,6 +58,7 @@ public class DefaultQueryMapperMethods {
     public static final String DISTINCT = "distinct";
     public static final String COUNT = "count";
     public static final String FIRST_PAGE = "1";
+    public static final String AVG_ATTRIBUTES = "avg";
 
     private static final Set<String> PREDEFINED_ATTRIBUTES = Set.of(
             PAGE,
@@ -57,7 +67,8 @@ public class DefaultQueryMapperMethods {
             ATTRIBUTES,
             DISTINCT,
             COUNT,
-            SUM_ATTRIBUTES
+            SUM_ATTRIBUTES,
+            AVG_ATTRIBUTES
     );
 
     /**
@@ -148,6 +159,36 @@ public class DefaultQueryMapperMethods {
         return Optional.ofNullable(requestParams.get(attributeType))
                 .map(attributes -> Arrays.asList(attributes.split(ATTRIBUTES_SEPARATOR)))
                 .orElse(null);
+    }
+
+    public static AvgAttributes mapAvgAttributes(Map<String, String> requestParams) {
+        String rawAvgAttributes = requestParams.get(AVG_ATTRIBUTES);
+        if (rawAvgAttributes == null) {
+            return null;
+        }
+
+        Matcher matcher = AVG_ATTRIBUTES_PATTERN.matcher(rawAvgAttributes);
+        String[] avgAttributes;
+        if (matcher.find()) {
+            avgAttributes = matcher.group(0).split(",");
+        } else {
+            throw new RuntimeException("Invalid 'avg' operation syntax: " + rawAvgAttributes);
+        }
+
+        return new AvgAttributes(
+                ArraysUtil.asListSafe(avgAttributes),
+                ArraysUtil.asListSafe(mapGroupByExpression(rawAvgAttributes))
+        );
+    }
+
+    private static String[] mapGroupByExpression(String expression) {
+        Matcher matcher = GROU_BY_PATTERN.matcher(expression);
+        String[] grouByAttributes = null;
+        if (matcher.find()) {
+            grouByAttributes = matcher.group(1).split(",");
+        }
+
+        return grouByAttributes;
     }
 
     /**

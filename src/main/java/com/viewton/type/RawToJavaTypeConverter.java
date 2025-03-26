@@ -1,7 +1,7 @@
 package com.viewton.type;
 
-import com.viewton.ComparableValue;
-import com.viewton.RawValue;
+import com.viewton.dto.ComparableValue;
+import com.viewton.dto.RawValue;
 
 /**
  * Interface for converting raw database values into Java-compatible {@link ComparableValue} objects.

@@ -1,5 +1,7 @@
 package com.viewton;
 
+import com.viewton.dto.AvgAttributes;
+import com.viewton.dto.RawOrderBy;
 import com.viewton.lang.NoneThreadSafe;
 
 import java.util.List;
@@ -28,6 +30,7 @@ public class ViewtonMappersContext {
     static Function<Map<String, String>, List<RawOrderBy>> mapOrderByes;
     static Function<Map<String, String>, List<String>> mapAttributes;
     static Function<Map<String, String>, List<String>> mapSumAttributes;
+    static Function<Map<String, String>, AvgAttributes> mapAvgAttributes;
     static Function<Map<String, String>, Integer> mapPage;
     static BiFunction<Map<String, String>, Integer, Integer> mapPageSize;
     static Function<Map<String, String>, Boolean> isDistinct;
@@ -41,6 +44,7 @@ public class ViewtonMappersContext {
         mapPageSize = DefaultQueryMapperMethods::mapPageSize;
         mapAttributes = DefaultQueryMapperMethods::mapAttributes;
         mapSumAttributes = DefaultQueryMapperMethods::mapSumAttributes;
+        mapAvgAttributes = DefaultQueryMapperMethods::mapAvgAttributes;
         isDistinct = DefaultQueryMapperMethods::isDistinct;
         isCount = DefaultQueryMapperMethods::isCount;
         isSum = DefaultQueryMapperMethods::isSum;
@@ -69,6 +73,11 @@ public class ViewtonMappersContext {
     @NoneThreadSafe
     public static void assignPageMapper(Function<Map<String, String>, Integer> mapper) {
         mapPage = mapper;
+    }
+
+    @NoneThreadSafe
+    public static void assignAvgAttributesMapper(Function<Map<String, String>, AvgAttributes> mapper) {
+        mapAvgAttributes = mapper;
     }
 
     @NoneThreadSafe

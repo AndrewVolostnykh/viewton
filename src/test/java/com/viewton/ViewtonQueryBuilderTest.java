@@ -91,7 +91,7 @@ public class ViewtonQueryBuilderTest {
                 .page(page)
                 .pageSize(pageSize)
                 .attributes(builder.id(), builder.name(), builder.test5())
-                .totalAttributes(builder.test1(), builder.test2())
+                .sumAttributes(builder.test1(), builder.test2())
                 .build();
 
         assertEquals("true", params.get("distinct"));
@@ -108,7 +108,7 @@ public class ViewtonQueryBuilderTest {
 
         Map<String, String> params = builder.count()
                 .attributes((TestQueryBuilder thisBuilder) -> List.of(thisBuilder.id(), thisBuilder.name(), thisBuilder.test5()))
-                .totalAttributes((TestQueryBuilder thisBuilder) -> List.of(builder.test1(), builder.test2()))
+                .sumAttributes((TestQueryBuilder thisBuilder) -> List.of(builder.test1(), builder.test2()))
                 .build();
 
         assertEquals("id,name,test5", params.get("attributes"));
