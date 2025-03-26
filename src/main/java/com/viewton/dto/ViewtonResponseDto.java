@@ -22,7 +22,7 @@ import java.util.stream.Stream;
 public class ViewtonResponseDto<T> {
     private final List<T> list;
     private final T sum;
-    private final T avg;
+    private final List<T> avg;
     private final Long count;
 
     public Optional<T> findFirstResult() {

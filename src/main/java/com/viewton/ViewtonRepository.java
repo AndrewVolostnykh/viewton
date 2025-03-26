@@ -1,5 +1,6 @@
 package com.viewton;
 
+import com.viewton.dto.AvgAttributes;
 import com.viewton.dto.RawOrderBy;
 import com.viewton.dto.ViewtonQuery;
 import com.viewton.dto.ViewtonResponseDto;
@@ -20,10 +21,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
+import org.yaml.snakeyaml.util.ArrayUtils;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.toList;
 
@@ -187,13 +192,13 @@ public class ViewtonRepository {
      * as an entity of the provided type. If averaging is not required (as determined by
      * the `doNotAvg` flag in the query), the method returns {@code null}.</p>
      *
-     * @param query the {@link ViewtonQuery} containing the needed attributes for the average calculation
-     *              and the attributes to be averaged
+     * @param query      the {@link ViewtonQuery} containing the needed attributes for the average calculation
+     *                   and the attributes to be averaged
      * @param entityType the class type of the entity to be returned as the result of the query
-     * @param <T> the type of the entity to be returned
+     * @param <T>        the type of the entity to be returned
      * @return the calculated average values, {@code null} if avg not needed.
      */
-    public <T> T avg(ViewtonQuery query, Class<T> entityType) {
+    public <T> List<T> avg(ViewtonQuery query, Class<T> entityType) {
         if (query.doNotAvg()) {
             return null;
         }
@@ -203,20 +208,20 @@ public class ViewtonRepository {
         Root<T> root = basicQuery.from(entityType);
 
         CriteriaQuery<Tuple> criteriaQuery = basicQuery
-                .multiselect(getAvgColumns(query.getAvg().getAttributes(), cb, root))
+                .multiselect(getAvgColumns(query.getAvg(), cb, root))
                 .groupBy(getGroupByColumns(query.getAvg().getGroupByAttributes(), root))
                 .where(WherePredicatesConverter.convert(query.getRawWhereClauses(), root, cb)
                         .toArray(new Predicate[0]));
 
         return ((Session) entityManager.getDelegate())
                 .createQuery(criteriaQuery)
-                .uniqueResultOptional()
+                .stream()
                 .map(Tuple::toArray)
                 .map(tuples -> new AliasToBeanResultTransformer(entityType).transformTuple(
-                        tuples, query.getAvg().getAttributes().toArray(new String[0]))
+                        tuples, query.getAvg().getAllFields().toArray(new String[0]))
                 )
                 .map(entityType::cast)
-                .get();
+                .collect(Collectors.toList());
     }
 
     /**
@@ -283,9 +288,9 @@ public class ViewtonRepository {
      * Retrieves the sum columns (sum expressions) for the specified fields in the query.
      *
      * @param sumFields The list of total fields to be summed.
-     * @param cb          The CriteriaBuilder used to build sum expressions.
-     * @param root        The root entity path.
-     * @param <T>         The entity type.
+     * @param cb        The CriteriaBuilder used to build sum expressions.
+     * @param root      The root entity path.
+     * @param <T>       The entity type.
      * @return An array of `Expression<Number>` representing the sum of the total fields.
      */
     @SuppressWarnings("unchecked")
@@ -298,15 +303,28 @@ public class ViewtonRepository {
     /**
      * Retrieves the avg columns (avg expressions) for the specified fields in the query.
      *
-     * @param avgFields   The list of total fields to which 'avg' should be applied.
-     * @param cb          The CriteriaBuilder used to build 'avg' expressions.
-     * @param root        The root entity path.
-     * @param <T>         The entity type.
+     * @param avgAttributes The DTO of attributes to which 'avg' should be applied and grouped by.
+     * @param cb        The CriteriaBuilder used to build 'avg' expressions.
+     * @param root      The root entity path.
+     * @param <T>       The entity type.
      * @return An array of `Expression<Number>` representing the avg of the avg fields.
      */
-    private <T> Expression[] getAvgColumns(List<String> avgFields, CriteriaBuilder cb, Root<T> root) {
-        return avgFields.stream()
+    @SuppressWarnings("unchecked")
+    private <T> Expression[] getAvgColumns(AvgAttributes avgAttributes, CriteriaBuilder cb, Root<T> root) {
+        Expression[] groupByExpressions;
+        if (avgAttributes.getGroupByAttributes() == null) {
+            groupByExpressions = new Expression[0];
+        } else {
+            groupByExpressions = avgAttributes.getGroupByAttributes().stream()
+                    .map(groupBy -> root.get(groupBy))
+                    .toArray(Expression[]::new);
+        }
+
+        Expression[] avgExpressions = avgAttributes.getAttributes().stream()
                 .map(avgField -> cb.avg(root.get(avgField)))
+                .toArray(Expression[]::new);
+
+        return Stream.concat(Arrays.stream(groupByExpressions), Arrays.stream(avgExpressions))
                 .toArray(Expression[]::new);
     }
 
