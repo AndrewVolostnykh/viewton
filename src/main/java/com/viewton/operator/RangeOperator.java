@@ -1,6 +1,6 @@
 package com.viewton.operator;
 
-import com.viewton.ComparableValue;
+import com.viewton.dto.ComparableValue;
 import com.viewton.RawWhereClause;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.Path;

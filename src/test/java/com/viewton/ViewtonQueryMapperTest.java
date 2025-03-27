@@ -1,5 +1,7 @@
 package com.viewton;
 
+import com.viewton.dto.Order;
+import com.viewton.dto.ViewtonQuery;
 import com.viewton.operator.EqualOperator;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -7,6 +9,7 @@ import org.junit.jupiter.api.Test;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class ViewtonQueryMapperTest {
@@ -22,6 +25,7 @@ public class ViewtonQueryMapperTest {
                 "page", "1",
                 "page_size", "10",
                 "attributes", "id,name",
+                "avg", "id,randomNumber[id,anotherId]",
                 "distinct", "true",
                 "count", "true",
                 "sum", "id"
@@ -40,6 +44,7 @@ public class ViewtonQueryMapperTest {
         assertEquals(2, viewtonQuery.getAttributes().size());
         assertEquals(2, viewtonQuery.getRawOrderByes().size());
         assertEquals(1, viewtonQuery.getSum().size());
+        assertNotNull(viewtonQuery.getAvg());
         assertTrue(viewtonQuery.getSum().stream().anyMatch(value -> value.equals("id")));
         // check name field order equals DESCENDING
         assertTrue(viewtonQuery.getRawOrderByes()
@@ -77,5 +82,10 @@ public class ViewtonQueryMapperTest {
                 .map(RawWhereClause::getValues)
                 .stream()
                 .anyMatch(values -> values.get(0).getValue().equals("SomeName")));
+
+        assertTrue(viewtonQuery.getAvg().getGroupByAttributes().contains("id"));
+        assertTrue(viewtonQuery.getAvg().getGroupByAttributes().contains("anotherId"));
+        assertTrue(viewtonQuery.getAvg().getAttributes().contains("randomNumber"));
+        assertTrue(viewtonQuery.getAvg().getAttributes().contains("id"));
     }
 }

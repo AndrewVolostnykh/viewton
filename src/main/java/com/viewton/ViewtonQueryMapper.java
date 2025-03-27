@@ -1,5 +1,7 @@
 package com.viewton;
 
+import com.viewton.dto.ViewtonQuery;
+
 import java.util.Map;
 
 /**
@@ -34,6 +36,7 @@ public class ViewtonQueryMapper {
                 .pageSize(ViewtonMappersContext.mapPageSize.apply(requestParams, defaultPageSize))
                 .attributes(ViewtonMappersContext.mapAttributes.apply(requestParams))
                 .sum(ViewtonMappersContext.mapSumAttributes.apply(requestParams))
+                .avg(ViewtonMappersContext.mapAvgAttributes.apply(requestParams))
                 .distinct(ViewtonMappersContext.isDistinct.apply(requestParams))
                 .count(ViewtonMappersContext.isCount.apply(requestParams))
                 .build();

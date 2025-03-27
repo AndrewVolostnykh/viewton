@@ -1,5 +1,8 @@
 package com.viewton;
 
+import com.viewton.dto.AvgAttributes;
+import com.viewton.dto.RawOrderBy;
+import com.viewton.dto.ViewtonQuery;
 import com.viewton.dto.ViewtonResponseDto;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Tuple;
@@ -19,9 +22,12 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.toList;
 
@@ -81,6 +87,7 @@ public class ViewtonRepository {
         return new ViewtonResponseDto<>(
                 list(viewtonQuery, entityType),
                 sum(viewtonQuery, entityType),
+                avg(viewtonQuery, entityType),
                 count(viewtonQuery, entityType)
         );
     }
@@ -161,7 +168,7 @@ public class ViewtonRepository {
         Root<T> root = basicQuery.from(entityType);
 
         CriteriaQuery<Tuple> criteriaQuery = basicQuery
-                .multiselect(getTotalColumns(query.getSum(), cb, root))
+                .multiselect(getSumColumns(query.getSum(), cb, root))
                 .where(WherePredicatesConverter.convert(query.getRawWhereClauses(), root, cb)
                         .toArray(new Predicate[0]));
 
@@ -174,6 +181,46 @@ public class ViewtonRepository {
                 )
                 .map(entityType::cast)
                 .get();
+    }
+
+    /**
+     * Calculates the average values for the specified attributes in the given query.
+     *
+     * <p>This method performs a query to calculate the average values of the attributes
+     * specified in the query, grouped by the appropriate columns, and returns the result
+     * as an entity of the provided type. If averaging is not required (as determined by
+     * the `doNotAvg` flag in the query), the method returns {@code null}.</p>
+     *
+     * @param query      the {@link ViewtonQuery} containing the needed attributes for the average calculation
+     *                   and the attributes to be averaged
+     * @param entityType the class type of the entity to be returned as the result of the query
+     * @param <T>        the type of the entity to be returned
+     * @return the calculated average values, {@code null} if avg not needed.
+     */
+    public <T> List<T> avg(ViewtonQuery query, Class<T> entityType) {
+        if (query.doNotAvg()) {
+            return null;
+        }
+
+        CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+        CriteriaQuery<Tuple> basicQuery = cb.createTupleQuery();
+        Root<T> root = basicQuery.from(entityType);
+
+        CriteriaQuery<Tuple> criteriaQuery = basicQuery
+                .multiselect(getAvgColumns(query.getAvg(), cb, root))
+                .groupBy(getGroupByColumns(query.getAvg().getGroupByAttributes(), root))
+                .where(WherePredicatesConverter.convert(query.getRawWhereClauses(), root, cb)
+                        .toArray(new Predicate[0]));
+
+        return ((Session) entityManager.getDelegate())
+                .createQuery(criteriaQuery)
+                .stream()
+                .map(Tuple::toArray)
+                .map(tuples -> new AliasToBeanResultTransformer(entityType).transformTuple(
+                        tuples, query.getAvg().getAllFields(entityType).toArray(new String[0]))
+                )
+                .map(entityType::cast)
+                .collect(Collectors.toList());
     }
 
     /**
@@ -237,18 +284,47 @@ public class ViewtonRepository {
     }
 
     /**
-     * Retrieves the total columns (sum expressions) for the specified fields in the query.
+     * Retrieves the sum columns (sum expressions) for the specified fields in the query.
      *
-     * @param totalFields The list of total fields to be summed.
-     * @param cb          The CriteriaBuilder used to build sum expressions.
-     * @param root        The root entity path.
-     * @param <T>         The entity type.
+     * @param sumFields The list of total fields to be summed.
+     * @param cb        The CriteriaBuilder used to build sum expressions.
+     * @param root      The root entity path.
+     * @param <T>       The entity type.
      * @return An array of `Expression<Number>` representing the sum of the total fields.
      */
     @SuppressWarnings("unchecked")
-    private <T> Expression<Number>[] getTotalColumns(List<String> totalFields, CriteriaBuilder cb, Root<T> root) {
-        return totalFields.stream()
-                .map(totalField -> cb.sum(root.get(totalField)))
+    private <T> Expression<Number>[] getSumColumns(List<String> sumFields, CriteriaBuilder cb, Root<T> root) {
+        return sumFields.stream()
+                .map(sumFiled -> cb.sum(root.get(sumFiled)))
+                .toArray(Expression[]::new);
+    }
+
+    @SuppressWarnings("unchecked")
+    private <T> Expression[] getAvgColumns(AvgAttributes avgAttributes, CriteriaBuilder cb, Root<T> root) {
+        Expression[] groupByExpressions;
+        if (avgAttributes.getGroupByAttributes() == null) {
+            groupByExpressions = new Expression[0];
+        } else {
+            groupByExpressions = avgAttributes.getGroupByAttributes().stream()
+                    .map(groupBy -> root.get(groupBy))
+                    .toArray(Expression[]::new);
+        }
+
+        Expression[] avgExpressions = avgAttributes.getAttributes().stream()
+                .map(avgField -> cb.avg(root.get(avgField)))
+                .toArray(Expression[]::new);
+
+        return Stream.concat(Arrays.stream(groupByExpressions), Arrays.stream(avgExpressions))
+                .toArray(Expression[]::new);
+    }
+
+    private <T> Expression[] getGroupByColumns(List<String> groupByFields, Root<T> root) {
+        if (groupByFields == null) {
+            return new Expression[0];
+        }
+
+        return groupByFields.stream()
+                .map(groupBy -> root.get(groupBy))
                 .toArray(Expression[]::new);
     }
 }
