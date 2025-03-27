@@ -25,7 +25,7 @@ public class ViewtonQuery {
     private List<? extends RawWhereClause> rawWhereClauses;
     private List<RawOrderBy> rawOrderByes;
     private List<String> attributes;
-    private List<String> sum;
+    private SumAttributes sum;
     private AvgAttributes avg;
     private int pageSize;
     private int page;
@@ -41,7 +41,7 @@ public class ViewtonQuery {
     }
 
     public boolean isSum() {
-        return sum != null && !sum.isEmpty();
+        return sum != null;
     }
 
     public boolean doNotAvg() {
