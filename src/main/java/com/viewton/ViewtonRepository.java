@@ -299,15 +299,6 @@ public class ViewtonRepository {
                 .toArray(Expression[]::new);
     }
 
-    /**
-     * Retrieves the avg columns (avg expressions) for the specified fields in the query.
-     *
-     * @param avgAttributes The DTO of attributes to which 'avg' should be applied and grouped by.
-     * @param cb        The CriteriaBuilder used to build 'avg' expressions.
-     * @param root      The root entity path.
-     * @param <T>       The entity type.
-     * @return An array of `Expression<Number>` representing the avg of the avg fields.
-     */
     @SuppressWarnings("unchecked")
     private <T> Expression[] getAvgColumns(AvgAttributes avgAttributes, CriteriaBuilder cb, Root<T> root) {
         Expression[] groupByExpressions;

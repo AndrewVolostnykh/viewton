@@ -49,6 +49,7 @@ import java.util.regex.Pattern;
 public class DefaultQueryMapperMethods {
     public static final Pattern AVG_ATTRIBUTES_PATTERN = Pattern.compile(".*?(?=\\[|$)");
     public static final Pattern GROU_BY_PATTERN = Pattern.compile("\\[(.*)\\]");
+
     public static final String ATTRIBUTES_SEPARATOR = ",";
     public static final String PAGE = "page";
     public static final String PAGE_SIZE = "page_size";
@@ -161,6 +162,23 @@ public class DefaultQueryMapperMethods {
                 .orElse(null);
     }
 
+    /**
+     * Maps the provided request parameters to an {@link AvgAttributes} object. This method extracts the
+     * "avg" attributes from the request parameters, parses the corresponding values, and returns an
+     * {@link AvgAttributes} object containing the parsed attributes.
+     *
+     * <p>It expects the request parameter to contain a key corresponding to {@code AVG_ATTRIBUTES},
+     * which is a comma-separated string representing the "avg" attributes. Additionally, the method
+     * looks for a "group by" expression and returns it as part of the {@link AvgAttributes} object.
+     * If the "group by" expression is not found, the method will return null for it.
+     *
+     * @param requestParams The method expects a key corresponding to {@code AVG_ATTRIBUTES}
+     *                      which should contain the raw comma-separated "avg" attributes.
+     * @return An {@link AvgAttributes} object populated with the parsed "avg" attributes and an optional
+     * "group by" expression.
+     * @throws RuntimeException If the syntax of the "avg" operation is invalid (i.e., it doesn't match the
+     *                          expected format defined by {@link DefaultQueryMapperMethods#AVG_ATTRIBUTES_PATTERN}).
+     */
     public static AvgAttributes mapAvgAttributes(Map<String, String> requestParams) {
         String rawAvgAttributes = requestParams.get(AVG_ATTRIBUTES);
         if (rawAvgAttributes == null) {

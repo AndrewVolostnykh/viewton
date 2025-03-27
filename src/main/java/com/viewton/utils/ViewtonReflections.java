@@ -13,9 +13,27 @@ import java.util.stream.Collectors;
 public class ViewtonReflections {
 
     /**
-     * Method for getting Avg aliases from java class.
-     * Iterating through attributes searches for a fields in entity and replacing aliases if
-     * it is annotated with {@link com.viewton.lang.AvgAlias}.
+     * This method processes a list of attribute names and checks if any of the corresponding fields in the provided entity class
+     * are annotated with {@link AvgAlias}. If a field is annotated with {@code AvgAlias}, the method retrieves the value of the
+     * {@code mapTo} attribute from the annotation and adds it to the result list. If the field is not annotated with {@code AvgAlias},
+     * the method simply adds the attribute name to the result list as is.
+     *
+     * <p>This is useful in scenarios where certain fields in an entity are mapped to other fields (for example, fields representing
+     * the result of an {@code avg} operation), and we need to dynamically determine the mapping of these attributes.
+     *
+     * <p>Example usage:
+     * <pre>
+     * {@code
+     * List<String> attributes = Arrays.asList("randomNumber", "someOtherField");
+     * List<String> avgAliases = getAvgAliases(attributes, SomeEntity.class);
+     * }
+     * </pre>
+     *
+     * @param attributes A list of attribute names (field names) to check against the entity class.
+     * @param entity The class of the entity to examine for fields annotated with {@code AvgAlias}.
+     *
+     * @return A list of attribute names where each name is either the original attribute name or the name specified in the
+     *         {@code mapTo} attribute of the {@code AvgAlias} annotation if the field is annotated.
      */
     public static List<String> getAvgAliases(List<String> attributes, Class<?> entity) {
         List<String> result = new ArrayList<>();
