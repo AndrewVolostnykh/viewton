@@ -2,6 +2,7 @@ package com.viewton;
 
 import com.viewton.dto.AvgAttributes;
 import com.viewton.dto.RawOrderBy;
+import com.viewton.dto.SumAttributes;
 import com.viewton.lang.NoneThreadSafe;
 
 import java.util.List;
@@ -29,7 +30,7 @@ public class ViewtonMappersContext {
     static Function<Map<String, String>, List<? extends RawWhereClause>> mapWhereClauses;
     static Function<Map<String, String>, List<RawOrderBy>> mapOrderByes;
     static Function<Map<String, String>, List<String>> mapAttributes;
-    static Function<Map<String, String>, List<String>> mapSumAttributes;
+    static Function<Map<String, String>, SumAttributes> mapSumAttributes;
     static Function<Map<String, String>, AvgAttributes> mapAvgAttributes;
     static Function<Map<String, String>, Integer> mapPage;
     static BiFunction<Map<String, String>, Integer, Integer> mapPageSize;
@@ -81,7 +82,7 @@ public class ViewtonMappersContext {
     }
 
     @NoneThreadSafe
-    public static void assignTotalAttributesMapper(Function<Map<String, String>, List<String>> mapper) {
+    public static void assignTotalAttributesMapper(Function<Map<String, String>, SumAttributes> mapper) {
         mapSumAttributes = mapper;
     }
 

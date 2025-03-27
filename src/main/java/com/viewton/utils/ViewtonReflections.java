@@ -1,6 +1,7 @@
 package com.viewton.utils;
 
 import com.viewton.lang.AvgAlias;
+import com.viewton.lang.SumAlias;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -37,8 +38,7 @@ public class ViewtonReflections {
      */
     public static List<String> getAvgAliases(List<String> attributes, Class<?> entity) {
         List<String> result = new ArrayList<>();
-        Map<String, Field> fields = Arrays.stream(entity.getDeclaredFields())
-                .collect(Collectors.toMap(Field::getName, Function.identity()));
+        Map<String, Field> fields = mapDeclaredFields(entity);
         for (String attribute : attributes) {
             Field field = fields.get(attribute);
             if (field.isAnnotationPresent(AvgAlias.class)) {
@@ -50,5 +50,26 @@ public class ViewtonReflections {
         }
 
         return result;
+    }
+
+    public static List<String> getSumAliases(List<String> attributes, Class<?> entity) {
+        List<String> result = new ArrayList<>();
+        Map<String, Field> fields = mapDeclaredFields(entity);
+        for (String attribute : attributes) {
+            Field field = fields.get(attribute);
+            if (field.isAnnotationPresent(SumAlias.class)) {
+                SumAlias declaredAnnotation = field.getDeclaredAnnotation(SumAlias.class);
+                result.add(declaredAnnotation.mapTo());
+            } else {
+                result.add(attribute);
+            }
+        }
+
+        return result;
+    }
+
+    private static Map<String, Field> mapDeclaredFields(Class<?> entity) {
+        return Arrays.stream(entity.getDeclaredFields())
+                .collect(Collectors.toMap(Field::getName, Function.identity()));
     }
 }
