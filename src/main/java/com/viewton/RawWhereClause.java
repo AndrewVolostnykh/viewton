@@ -1,5 +1,6 @@
 package com.viewton;
 
+import com.viewton.dto.RawValue;
 import com.viewton.operator.NotEqualOperator;
 import com.viewton.operator.Operator;
 import com.viewton.operator.OperatorContext;

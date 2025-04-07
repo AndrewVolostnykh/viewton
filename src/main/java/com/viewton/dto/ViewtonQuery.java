@@ -1,5 +1,6 @@
-package com.viewton;
+package com.viewton.dto;
 
+import com.viewton.RawWhereClause;
 import lombok.Builder;
 import lombok.Data;
 
@@ -24,7 +25,8 @@ public class ViewtonQuery {
     private List<? extends RawWhereClause> rawWhereClauses;
     private List<RawOrderBy> rawOrderByes;
     private List<String> attributes;
-    private List<String> sum;
+    private SumAttributes sum;
+    private AvgAttributes avg;
     private int pageSize;
     private int page;
     private boolean count;
@@ -37,8 +39,13 @@ public class ViewtonQuery {
     public boolean doNotSum() {
         return !isSum();
     }
+
     public boolean isSum() {
-        return sum != null && !sum.isEmpty();
+        return sum != null;
+    }
+
+    public boolean doNotAvg() {
+        return avg == null;
     }
 
     // nature SQL offset

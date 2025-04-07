@@ -1,7 +1,7 @@
 package com.viewton.type;
 
-import com.viewton.ComparableValue;
-import com.viewton.RawValue;
+import com.viewton.dto.ComparableValue;
+import com.viewton.dto.RawValue;
 import com.viewton.utils.DateUtil;
 
 import java.time.LocalDate;

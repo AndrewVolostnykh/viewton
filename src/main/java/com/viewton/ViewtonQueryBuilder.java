@@ -107,7 +107,7 @@ public class ViewtonQueryBuilder {
         return (B) this;
     }
 
-    public <B extends ViewtonQueryBuilder> B totalAttributes(Function<B, List<FilterBuilder<?>>> attributes) {
+    public <B extends ViewtonQueryBuilder> B sumAttributes(Function<B, List<FilterBuilder<?>>> attributes) {
         return paramWithFields(attributes, "totalAttributes");
     }
 
@@ -136,7 +136,7 @@ public class ViewtonQueryBuilder {
     }
 
     @SuppressWarnings("unchecked")
-    public <B extends ViewtonQueryBuilder> B totalAttributes(FilterBuilder<?>... totalAttributes) {
+    public <B extends ViewtonQueryBuilder> B sumAttributes(FilterBuilder<?>... totalAttributes) {
         if (totalAttributes.length > 0) {
             List<String> attributesNames = Arrays.stream(totalAttributes).map(FilterBuilder::key).collect(Collectors.toList());
             params.put("totalAttributes", String.join(",", attributesNames));

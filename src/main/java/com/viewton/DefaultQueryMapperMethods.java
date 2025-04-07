@@ -1,11 +1,21 @@
 package com.viewton;
 
+import com.viewton.dto.AggregateAttributes;
+import com.viewton.dto.AvgAttributes;
+import com.viewton.dto.Order;
+import com.viewton.dto.RawOrderBy;
+import com.viewton.dto.SumAttributes;
+import com.viewton.utils.ArraysUtil;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.BiFunction;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Default implementation for mapping query parameters from a request (e.g., URL parameters)
@@ -40,6 +50,9 @@ import java.util.Set;
  * </pre>
  */
 public class DefaultQueryMapperMethods {
+    public static final Pattern AGGREGATE_ATTRIBUTES_PATTERN = Pattern.compile(".*?(?=\\[|$)");
+    public static final Pattern GROU_BY_PATTERN = Pattern.compile("\\[(.*)\\]");
+
     public static final String ATTRIBUTES_SEPARATOR = ",";
     public static final String PAGE = "page";
     public static final String PAGE_SIZE = "page_size";
@@ -49,6 +62,7 @@ public class DefaultQueryMapperMethods {
     public static final String DISTINCT = "distinct";
     public static final String COUNT = "count";
     public static final String FIRST_PAGE = "1";
+    public static final String AVG_ATTRIBUTES = "avg";
 
     private static final Set<String> PREDEFINED_ATTRIBUTES = Set.of(
             PAGE,
@@ -57,7 +71,8 @@ public class DefaultQueryMapperMethods {
             ATTRIBUTES,
             DISTINCT,
             COUNT,
-            SUM_ATTRIBUTES
+            SUM_ATTRIBUTES,
+            AVG_ATTRIBUTES
     );
 
     /**
@@ -133,8 +148,8 @@ public class DefaultQueryMapperMethods {
      * @param requestParams the map of query parameters.
      * @return a list of total attributes.
      */
-    public static List<String> mapSumAttributes(Map<String, String> requestParams) {
-        return mapAttributes(requestParams, SUM_ATTRIBUTES);
+    public static SumAttributes mapSumAttributes(Map<String, String> requestParams) {
+        return mapAggregateAttributes(requestParams, SUM_ATTRIBUTES, SumAttributes::new);
     }
 
     /**
@@ -148,6 +163,59 @@ public class DefaultQueryMapperMethods {
         return Optional.ofNullable(requestParams.get(attributeType))
                 .map(attributes -> Arrays.asList(attributes.split(ATTRIBUTES_SEPARATOR)))
                 .orElse(null);
+    }
+
+    /**
+     * Maps the provided request parameters to an {@link AvgAttributes} object. This method extracts the
+     * "avg" attributes from the request parameters, parses the corresponding values, and returns an
+     * {@link AvgAttributes} object containing the parsed attributes.
+     *
+     * <p>It expects the request parameter to contain a key corresponding to {@code AVG_ATTRIBUTES},
+     * which is a comma-separated string representing the "avg" attributes. Additionally, the method
+     * looks for a "group by" expression and returns it as part of the {@link AvgAttributes} object.
+     * If the "group by" expression is not found, the method will return null for it.
+     *
+     * @param requestParams The method expects a key corresponding to {@code AVG_ATTRIBUTES}
+     *                      which should contain the raw comma-separated "avg" attributes.
+     * @return An {@link AvgAttributes} object populated with the parsed "avg" attributes and an optional
+     * "group by" expression.
+     * @throws RuntimeException If the syntax of the "avg" operation is invalid (i.e., it doesn't match the
+     *                          expected format defined by {@link DefaultQueryMapperMethods#AGGREGATE_ATTRIBUTES_PATTERN}).
+     */
+    public static AvgAttributes mapAvgAttributes(Map<String, String> requestParams) {
+        return mapAggregateAttributes(requestParams, AVG_ATTRIBUTES, AvgAttributes::new);
+    }
+
+    public static <T extends AggregateAttributes> T mapAggregateAttributes(
+            Map<String, String> requestParams,
+            String attributeType,
+            BiFunction<List<String>, List<String>, T> aggregateAttributesConstructor
+    ) {
+        String rawAvgAttributes = requestParams.get(attributeType);
+        if (rawAvgAttributes == null) {
+            return null;
+        }
+
+        Matcher matcher = AGGREGATE_ATTRIBUTES_PATTERN.matcher(rawAvgAttributes);
+        String[] avgAttributes;
+        if (matcher.find()) {
+            avgAttributes = matcher.group(0).split(",");
+        } else {
+            throw new RuntimeException(String.format("Invalid '%s' operation syntax: %s", attributeType, rawAvgAttributes));
+        }
+
+        return aggregateAttributesConstructor.apply(ArraysUtil.asListSafe(avgAttributes),
+                ArraysUtil.asListSafe(mapGroupByExpression(rawAvgAttributes)));
+    }
+
+    private static String[] mapGroupByExpression(String expression) {
+        Matcher matcher = GROU_BY_PATTERN.matcher(expression);
+        String[] grouByAttributes = null;
+        if (matcher.find()) {
+            grouByAttributes = matcher.group(1).split(",");
+        }
+
+        return grouByAttributes;
     }
 
     /**

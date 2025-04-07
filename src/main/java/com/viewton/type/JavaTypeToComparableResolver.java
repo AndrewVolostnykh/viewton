@@ -1,7 +1,7 @@
 package com.viewton.type;
 
-import com.viewton.ComparableValue;
-import com.viewton.RawValue;
+import com.viewton.dto.ComparableValue;
+import com.viewton.dto.RawValue;
 import com.viewton.lang.NoneThreadSafe;
 
 import java.util.ArrayList;

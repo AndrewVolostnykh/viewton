@@ -1,6 +1,12 @@
 package com.viewton;
 
+import com.viewton.dto.AggregateAttributes;
+import com.viewton.dto.AvgAttributes;
+import com.viewton.dto.RawOrderBy;
+import com.viewton.dto.SumAttributes;
+import com.viewton.dto.ViewtonQuery;
 import com.viewton.dto.ViewtonResponseDto;
+import com.viewton.utils.ViewtonReflections;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Tuple;
 import jakarta.persistence.criteria.CriteriaBuilder;
@@ -19,9 +25,13 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.toList;
 
@@ -81,6 +91,7 @@ public class ViewtonRepository {
         return new ViewtonResponseDto<>(
                 list(viewtonQuery, entityType),
                 sum(viewtonQuery, entityType),
+                avg(viewtonQuery, entityType),
                 count(viewtonQuery, entityType)
         );
     }
@@ -151,7 +162,7 @@ public class ViewtonRepository {
      * @param <T>        The entity type.
      * @return The total values for the specified attributes.
      */
-    public <T> T sum(ViewtonQuery query, Class<T> entityType) {
+    public <T> List<T> sum(ViewtonQuery query, Class<T> entityType) {
         if (query.doNotSum()) {
             return null;
         }
@@ -161,19 +172,62 @@ public class ViewtonRepository {
         Root<T> root = basicQuery.from(entityType);
 
         CriteriaQuery<Tuple> criteriaQuery = basicQuery
-                .multiselect(getTotalColumns(query.getSum(), cb, root))
+                .multiselect(getSumColumns(query.getSum(), cb, root))
+                .groupBy(getGroupByColumns(query.getSum().getGroupByAttributes(), root))
                 .where(WherePredicatesConverter.convert(query.getRawWhereClauses(), root, cb)
                         .toArray(new Predicate[0]));
 
         return ((Session) entityManager.getDelegate())
                 .createQuery(criteriaQuery)
-                .uniqueResultOptional()
+                .setFirstResult(query.getPage()).setMaxResults(query.getPageSize())
+                .stream()
                 .map(Tuple::toArray)
                 .map(tuples -> new AliasToBeanResultTransformer(entityType).transformTuple(
-                        tuples, query.getSum().toArray(new String[0]))
+                        tuples, query.getSum().getAllFields(ViewtonReflections::getSumAliases, entityType).toArray(new String[0]))
                 )
                 .map(entityType::cast)
-                .get();
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * Calculates the average values for the specified attributes in the given query.
+     *
+     * <p>This method performs a query to calculate the average values of the attributes
+     * specified in the query, grouped by the appropriate columns, and returns the result
+     * as an entity of the provided type. If averaging is not required (as determined by
+     * the `doNotAvg` flag in the query), the method returns {@code null}.</p>
+     *
+     * @param query      the {@link ViewtonQuery} containing the needed attributes for the average calculation
+     *                   and the attributes to be averaged
+     * @param entityType the class type of the entity to be returned as the result of the query
+     * @param <T>        the type of the entity to be returned
+     * @return the calculated average values, {@code null} if avg not needed.
+     */
+    public <T> List<T> avg(ViewtonQuery query, Class<T> entityType) {
+        if (query.doNotAvg()) {
+            return null;
+        }
+
+        CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+        CriteriaQuery<Tuple> basicQuery = cb.createTupleQuery();
+        Root<T> root = basicQuery.from(entityType);
+
+        CriteriaQuery<Tuple> criteriaQuery = basicQuery
+                .multiselect(getAvgColumns(query.getAvg(), cb, root))
+                .groupBy(getGroupByColumns(query.getAvg().getGroupByAttributes(), root))
+                .where(WherePredicatesConverter.convert(query.getRawWhereClauses(), root, cb)
+                        .toArray(new Predicate[0]));
+
+        return ((Session) entityManager.getDelegate())
+                .createQuery(criteriaQuery)
+                .setFirstResult(query.getPage()).setMaxResults(query.getPageSize())
+                .stream()
+                .map(Tuple::toArray)
+                .map(tuples -> new AliasToBeanResultTransformer(entityType).transformTuple(
+                        tuples, query.getAvg().getAllFields(ViewtonReflections::getAvgAliases, entityType).toArray(new String[0]))
+                )
+                .map(entityType::cast)
+                .collect(Collectors.toList());
     }
 
     /**
@@ -237,18 +291,49 @@ public class ViewtonRepository {
     }
 
     /**
-     * Retrieves the total columns (sum expressions) for the specified fields in the query.
+     * Retrieves the sum columns (sum expressions) for the specified fields in the query.
      *
-     * @param totalFields The list of total fields to be summed.
-     * @param cb          The CriteriaBuilder used to build sum expressions.
-     * @param root        The root entity path.
-     * @param <T>         The entity type.
+     * @param sumAttributes The list of total fields to be summed.
+     * @param cb        The CriteriaBuilder used to build sum expressions.
+     * @param root      The root entity path.
+     * @param <T>       The entity type.
      * @return An array of `Expression<Number>` representing the sum of the total fields.
      */
     @SuppressWarnings("unchecked")
-    private <T> Expression<Number>[] getTotalColumns(List<String> totalFields, CriteriaBuilder cb, Root<T> root) {
-        return totalFields.stream()
-                .map(totalField -> cb.sum(root.get(totalField)))
+    private <T> Expression<Number>[] getSumColumns(SumAttributes sumAttributes, CriteriaBuilder cb, Root<T> root) {
+        return mapAggregateColumns(sumAttributes, cb::sum, root);
+    }
+
+    private <T, N extends Number> Expression[] mapAggregateColumns(AggregateAttributes aggregateAttributes, Function<Expression<N>, Expression<N>> expressionQuery, Root<T> root) {
+        Expression[] groupByExpressions;
+        if (aggregateAttributes.getGroupByAttributes() == null) {
+            groupByExpressions = new Expression[0];
+        } else {
+            groupByExpressions = aggregateAttributes.getGroupByAttributes().stream()
+                    .map(groupBy -> root.get(groupBy))
+                    .toArray(Expression[]::new);
+        }
+
+        Expression[] sumExpression = aggregateAttributes.getAttributes().stream()
+                .map(avgField -> expressionQuery.apply(root.get(avgField)))
+                .toArray(Expression[]::new);
+
+        return Stream.concat(Arrays.stream(groupByExpressions), Arrays.stream(sumExpression))
+                .toArray(Expression[]::new);
+    }
+
+    @SuppressWarnings("unchecked")
+    private <T> Expression[] getAvgColumns(AvgAttributes avgAttributes, CriteriaBuilder cb, Root<T> root) {
+        return mapAggregateColumns(avgAttributes, cb::sum, root);
+    }
+
+    private <T> Expression[] getGroupByColumns(List<String> groupByFields, Root<T> root) {
+        if (groupByFields == null) {
+            return new Expression[0];
+        }
+
+        return groupByFields.stream()
+                .map(groupBy -> root.get(groupBy))
                 .toArray(Expression[]::new);
     }
 }

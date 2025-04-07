@@ -21,10 +21,43 @@ import java.util.stream.Stream;
 @RequiredArgsConstructor
 public class ViewtonResponseDto<T> {
     private final List<T> list;
-    private final T sum;
+    private final List<T> sum;
+    private final List<T> avg;
     private final Long count;
 
-    public Optional<T> findFirstResult() {
+    public Optional<T> firstAvgResult() {
+        if (this.avg != null) {
+            return this.avg.stream().findFirst();
+        }
+
+        return Optional.empty();
+    }
+
+    public Stream<T> resultAvgStream() {
+        if (this.avg != null) {
+            return this.avg.stream();
+        }
+
+        return Stream.empty();
+    }
+
+    public Optional<T> findSumFirsValue() {
+        if (this.sum != null) {
+            return this.sum.stream().findFirst();
+        }
+
+        return Optional.empty();
+    }
+
+    public Stream<T> sumResultStream() {
+        if (this.sum != null) {
+            return this.sum.stream();
+        }
+
+        return Stream.empty();
+    }
+
+    public Optional<T> findListFirstResult() {
         if (this.list != null) {
             return this.list.stream().findFirst();
         }
@@ -32,7 +65,7 @@ public class ViewtonResponseDto<T> {
         return Optional.empty();
     }
 
-    public Stream<T> resultStream() {
+    public Stream<T> listResultStream() {
         if (this.list != null) {
             return this.list.stream();
         }
