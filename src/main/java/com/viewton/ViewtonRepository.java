@@ -22,6 +22,7 @@ import org.hibernate.query.Query;
 import org.hibernate.transform.AliasToBeanResultTransformer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -56,6 +57,7 @@ import static java.util.stream.Collectors.toList;
  */
 @Repository
 @Transactional(readOnly = true)
+@ConditionalOnMissingBean(ViewtonRepository.class)
 public class ViewtonRepository {
 
     private final int defaultPageSize;
@@ -69,7 +71,7 @@ public class ViewtonRepository {
      */
     @Autowired
     public ViewtonRepository(
-            @Value("${viewton.request.default-page-size:-1}") int defaultPageSize,
+            @Value("${viewton.request.default-page-size:50}") int defaultPageSize,
             EntityManager entityManager) {
         this.defaultPageSize = defaultPageSize;
         this.entityManager = entityManager;
