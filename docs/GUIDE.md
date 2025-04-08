@@ -18,7 +18,16 @@ This guide on Viewton will reveal common cases of usage, all the functions and c
    4. [Less than](#less-than)
    5. [Greater than or equals](#greater-or-equals-to)
    6. [Less than or equals](#less-or-equals-to)
-   7.
+   7. [Or](#or)
+   8. [Range](#range)
+7. [Aggregate functions](#aggregate-functions)
+   1. [Sum](#sum)
+   2. [Min](#min)
+   3. [Max](#max)
+   4. [Avg](#avg)
+   5. [Group By](#group-by)
+8. [Pagination](#pagination)
+9. [Sorting](#sorting)
 
 > Review the [examples](REQUEST_EXAMPLES.md) for a clearer understanding of the queries.
 
@@ -192,11 +201,46 @@ So response will contain entities that `someAttribute` value will not be `value`
 > Modificators `like` and `ignore case` also applicable to 'Not equals'
 
 ### Greater than
+
+For check that value is greater than the specified value operator `>` could be used.
+
+Example:
+`/some-entity?randomNumber=>10` - request will return only values where `randomNumber` greater than 10
 ### Less than
+
+For check that value is less than the specified value operator `<` could be used.
+
+Example:
+`/some-entity?randomNumber=<10` - request will return only values where `randomNumber` less than 10
 ### Greater or Equals to
+
+For check that value is greater or equals the specified value operator `>=` could be used.
+
+Example:
+`/some-entity?randomNumber=>=10` - request will return only values where `randomNumber` greater or equals to 10
 ### Less or Equals to
+
+For check that value is less or equals the specified value operator `<=` could be used.
+
+Example:
+`/some-entity?randomNumber=<=10` - request will return only values where `randomNumber` greater than 10
+
 ### Or
+
+To select entities by a couple of possible values for fields 'or' operation is very useful.
+
+For this used operator `|`. Specify all the needed values when checking field for equals.
+
+Example: `/some-entity?email=someemail@mail.com|oremail@mail.com|anotherone@mail.com` - the request will return entities
+where email equals to `someemail@mail.com` or `oremail@mail.com` or `anotherone@mail.com`
+
 ### Range
+
+To select by range of values operator `..` should be used.
+It works similarly to `between` in SQL.
+
+Example: `/some-entity?birthdate=1992-01-20T20:29:20..2000-01-20T20:29:20` - the request will return values
+which range is between left date and right date
 
 ## Aggregate functions
 ### Sum
