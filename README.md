@@ -1,5 +1,5 @@
 <p align="center">
- <img src="https://github.com/AndrewVolostnykh/viewton/blob/main/.github/logo/viewton_all.svg" align="center" alt="Viewton Library" />
+ <img src="https://github.com/AndrewVolostnykh/viewton/blob/main/.github/logo/viewton_sp.png" align="center" alt="Viewton Library" />
 </p>
 
 <p align="center">
