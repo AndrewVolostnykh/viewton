@@ -1,4 +1,21 @@
-# Viewton Library [![Tests](https://github.com/AndrewVolostnykh/viewton/actions/workflows/maven.yml/badge.svg)](https://github.com/AndrewVolostnykh/viewton/actions/workflows/maven.yml)
+<p align="center">
+ <img src="https://github.com/AndrewVolostnykh/viewton/blob/main/.github/logo/viewton_sp.png" align="center" alt="Viewton Library" />
+</p>
+
+<p align="center">
+  <h3 align="center">Dynamic SQL queries for REST and IPC</h3>
+</p>
+
+---
+
+<p align="center">
+  <img alt="Tests Status" src="https://github.com/AndrewVolostnykh/viewton/actions/workflows/maven.yml/badge.svg" />
+  <img alt="Made with spring" src="https://img.shields.io/badge/Made with-Spring-mediumseagreen.svg" />
+  <img alt="Made with Hibernate" src="https://img.shields.io/badge/Made with-Hibernate-darkgoldenrod.svg" />
+  <img alt="MIT Lincense" src="https://badgen.net/pypi/license/pip" />
+</p>
+
+## What is Viewton?
 
 Viewton is a library designed for extracting data from databases using REST API (HTTP). It significantly
 simplifies data retrieval operations, freeing the code from the need to manually construct complex queries involving
