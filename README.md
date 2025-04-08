@@ -5,7 +5,7 @@ simplifies data retrieval operations, freeing the code from the need to manually
 multiple filtering fields, sorting, pagination, and more. This is particularly useful when certain parameters should be
 ignored if not specified.
 
-> See [guide](docs/GUIDE.md) and [coming features](docs/COMING_SOON.md)
+> See [guide](docs/GUIDE.md), [examples](docs/REQUEST_EXAMPLES.md) and [coming features](docs/COMING_SOON.md)
 
 ## How to use it in application?
 
