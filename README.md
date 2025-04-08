@@ -1,52 +1,28 @@
 # Viewton Library [![Tests](https://github.com/AndrewVolostnykh/viewton/actions/workflows/maven.yml/badge.svg)](https://github.com/AndrewVolostnykh/viewton/actions/workflows/maven.yml)
 
-Viewton is a library designed for extracting data from databases by dynamically generating queries. It significantly
+Viewton is a library designed for extracting data from databases using REST API (HTTP). It significantly
 simplifies data retrieval operations, freeing the code from the need to manually construct complex queries involving
-multiple filtering fields, sorting, pagination, and more. This is particularly useful when certain parameters should be
-ignored if not specified.
+multiple filtering fields, sorting, pagination, and more. It is designed for use with Hibernate and SQL databases.
 
 > See [guide](docs/GUIDE.md), [examples](docs/REQUEST_EXAMPLES.md) and [coming features](docs/COMING_SOON.md)
 
-## How to use it in application?
-
-Add the source code or dependency to your project 
-and annotate the root application class or an appropriate configuration class with `@EnableViewton`.
-
-Example:
-```java
-import config.com.viewton.EnableViewton;
-import org.springframework.context.annotation.Configuration;
-
-@EnableViewton
-@Configuration
-public class SomeConfiguration {
-    ...
-}
-```
-
-## How Does Viewton Work?
-
-Viewton simplifies the process of constructing queries for interacting with databases by dynamically creating the necessary components like filters, pagination, sorting, and field selection. It is designed primarily for use with Hibernate and SQL databases, and it is most effective when used with database views, given their optimization potential. However, the library is also flexible enough to work with regular entities.
-
 ## When to Use Viewton?
 
-When you need to request data from back-end using different filters. Library aggregate all
-common cases of querying data: filtering, count, sum, aggregation
-
-- **Primary Usage**: Viewton is designed for databases using Hibernate and SQL.
-- **Recommended Setup**: Using database views for optimized performance, though it works just as well with regular entities.
+When you need to request data from the back end using different filters. Library aggregate all
+common cases of querying data: filtering, count, sum, aggregation, etc.
 
 ## Core Features
 
 - **Field Filtering**: Easily filter results based on field values.
-- **Pagination**: Implement pagination for controlling the amount of data retrieved.
+- **Pagination**: Implement pagination to control the amount of data retrieved.
 - **Field Selection**: Specify exactly which fields should be returned in the query results.
 - **Sorting**: Sort results by specific fields, either ascending or descending.
 - **Count**: Retrieve the count of entities that match the query criteria (`count(*)`).
 - **Distinct**: Get distinct values for specific fields.
 - **Summation**: Calculate the sum of numeric field values using `sum(...)`.
-- **Ignore case**: Ignores case of string entries
-- **Equals by pattern**: search for entities by not full string value entry
+- **Avg**: Calculate average value of the specified field.
+- **Ignore case**: Ignores case of string entries.
+- **Equals by pattern**: search for entities by not full string value entry.
 
 ## Simple Usage Examples
 
@@ -54,19 +30,28 @@ common cases of querying data: filtering, count, sum, aggregation
 
 Consider an API endpoint for retrieving payment data:
 
-`{{api-url}}/payments?page_size=50&page=1&count=true&distinct=true&attributes=currencyCode,paymentSum,rate,status&totalAttributes=paymentSum&conclusionDate=2025-01-01..2025-01-26&sorting=-conclusionDate,-id&userId=111&userEmail=someEmail@mail.com&paid=true&paymentSum=>=1000&userName=Some%&authorEmail=^ignoreCaseEmail@email.com`
+```
+domain.com/payments?
+page_size=50&page=1
+&count=true&distinct=true
+&attributes=currencyCode,paymentSum,rate,status
+&sum=paymentSum
+&sorting=-conclusionDate,id
+&userId=111 & userEmail=someEmail@mail.com & paid=true & paymentSum=>=1000 & userName=Some% & authorEmail=^ignoreCaseEmail@email.com
+&conclusionDate=2025-01-01..2025-01-26
+```
 
 In this example, the URL parameters demonstrate the following functionalities:
 
-- **Filtering**: `&userId=111&userEmail=someEmail@gmail.com&paymentSum>=1000`
-- **Sorting**: `&sorting=-conclusionDate,-id`
-- **Summing**: `&totalAttributes=paymentSum`
-- **Counting**: `&count=true`
-- **Distinct**: `&distinct=true`
-- **Field Selection**: `&attributes=currencyCode,paymentSum,rate,status`
-- **Pagination**: `&pageSize=50&page=1` (first page, 50 records)
-- **Equals with pattern**: `&userName=Some%` analog to SQL like patterns
-- **Ignore case**: `authorEmail=^ignoreCaseEmail@email.com` ignores case of your value and DB's value
+- **Pagination**: `&pageSize=50&page=1` - first page, 50 records
+- **Counting**: `&count=true` - count a number of queried entities
+- **Distinct**: `&distinct=true` - query only distinct entities
+- **Field Selection**: `&attributes=currencyCode,paymentSum,rate,status` - select only `currencyCode`, `paymentSum`, `rate` and `status` fields
+- **Summing**: `&sum=paymentSum,rate` - get a sum of the `paymentSum` and `rate` fields
+- **Sorting**: `&sorting=-conclusionDate,id` - sort result by DESC `conlusionDate` and ASC `id`
+- **Filtering**: `&userId=111&userEmail=someEmail@gmail.com&paymentSum=>=1000` - find only entities where `userId` equals 111, `userEmail` equals `someEmail@gmail.com` and `paymentSum` greater or equals to 1000
+- **Equals with pattern**: `&userName=Some%` - analog to SQL-like pattern, select entities where `userName` starts with `Some`
+- **Ignore case**: `authorEmail=^ignoreCaseEmail@email.com` - ignores case of your value and DB's value, so select entities where `authorEmail` equals to `ignoreCaseEmail@email.com` but ignoring case
 
 ### Example 2: Using ViewtonParamsBuilder for IPC
 
@@ -94,3 +79,22 @@ Payment.ParamsBuilder()
 
 This example demonstrates how the same query logic can be implemented using Viewton’s API, utilizing `ViewtonQueryBuilder` to
 build the query components in a programmatic way.
+
+
+## How to use it in an application?
+
+Add the source code or dependency to your project 
+and annotate the root application class or an appropriate configuration class with `@EnableViewton`.
+
+Example:
+```java
+import config.com.viewton.EnableViewton;
+import org.springframework.context.annotation.Configuration;
+
+@EnableViewton
+@Configuration
+public class SomeConfiguration {
+    ...
+}
+```
+
