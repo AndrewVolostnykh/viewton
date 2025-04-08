@@ -4,7 +4,7 @@ Viewton is a library designed for extracting data from databases using REST API 
 simplifies data retrieval operations, freeing the code from the need to manually construct complex queries involving
 multiple filtering fields, sorting, pagination, and more. It is designed for use with Hibernate and SQL databases.
 
-> See [guide how to use it](docs/GUIDE.md) and [coming features](docs/COMING_SOON.md)
+> See [guide](docs/GUIDE.md), [examples](docs/REQUEST_EXAMPLES.md) and [coming features](docs/COMING_SOON.md)
 
 ## When to Use Viewton?
 
