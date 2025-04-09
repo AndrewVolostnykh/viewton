@@ -33,6 +33,8 @@ This guide on Viewton will reveal common cases of usage, all the functions and c
 
 ## Implementing into an application
 
+| [Get back](#table-of-contents) | [To main page](../README.md) |
+
 Implementing Viewton to project is pretty simple. Special annotation `EnableViewton` based on `ComponentScan` so
 adding it to base class or configuration tells Spring where to look Viewton's dependencies.
 
@@ -63,6 +65,8 @@ public class Application {
 ```
 
 ## Usage
+
+| [Get back](#table-of-contents) | [To main page](../README.md) |
 
 `ViewtonRepository` is a class is an API for building queries. Basically it requires just `Map<String, String>` with
 needed modificators, filters, etc. This class can be autowired to needed component.
@@ -107,6 +111,8 @@ This URL would be used to select all SomeEntities where field `deleted` is false
 
 ### Selecting Fields
 
+| [Get back](#table-of-contents) | [To main page](../README.md) |
+
 Viewton returns all entities fields on request.
 To select only specific fields for an entity, you need to use the `attributes` parameter.
 On the client side endpoint call will be next:
@@ -117,6 +123,9 @@ In this case we have specified that only `someAttribute` and `someAnotherAttribu
 should be mapped and all other should be ignored.
 
 ### Count
+
+| [Get back](#table-of-contents) | [To main page](../README.md) |
+
 Viewton allows to count all the entities selected by filters (see how filters work below).
 To perform `count` query just specify param `count=true`
 So endpoint call should be like this:
@@ -138,10 +147,16 @@ So here we can see that request performed and returned number of all table entri
 (10 in this case)
 
 ### Distinct
+
+| [Get back](#table-of-contents) | [To main page](../README.md) |
+
 Viewton allows to select only distinct rows. To enable this mode just specify `distinct=true`,
 so the result entities will be distinct.
 
 ## Filtering
+
+| [Get back](#table-of-contents) | [To main page](../README.md) |
+
 Viewton has a functionality to filter DB rows.
 As an example let's take next entity:
 ```java
@@ -154,7 +169,13 @@ public class SomeEntity {
 }
 ```
 
+---
+
 ### Equals
+
+| [Get back](#table-of-contents) | [To main page](../README.md) |
+
+---
 
 To select entities with specified field's value we have to use next syntax:
 ```
@@ -164,6 +185,7 @@ So there we can see that entities which `someAttribute`
 field will be equals to `value` will be selected only.
 
 ##### Like
+
 Also, Viewton has an opportunity to select data by pattern (`like` operation in SQL).
 Symbol `%` (the same as SQL syntax) specifies needed pattern.
 ```
@@ -189,7 +211,12 @@ Or:
 ```
 For `someAttribute` ignore case is applied, for `someAnotherAttribute` doesn't.
 
+---
 ### Not equals
+
+| [Get back](#table-of-contents) | [To main page](../README.md) |
+
+---
 
 Not equals functionality works the same as equals, but just specifying `<>` before value.
 ```
@@ -200,32 +227,67 @@ So response will contain entities that `someAttribute` value will not be `value`
 > [!NOTE]\
 > Modificators `like` and `ignore case` also applicable to 'Not equals'
 
+---
+
 ### Greater than
+
+| [Get back](#table-of-contents) | [To main page](../README.md) |
+
+---
 
 For check that value is greater than the specified value operator `>` could be used.
 
 Example:
 `/some-entity?randomNumber=>10` - request will return only values where `randomNumber` greater than 10
+
+---
+
 ### Less than
+
+| [Get back](#table-of-contents) | [To main page](../README.md) |
+
+---
+
 
 For check that value is less than the specified value operator `<` could be used.
 
 Example:
 `/some-entity?randomNumber=<10` - request will return only values where `randomNumber` less than 10
+
+---
+
 ### Greater or Equals to
+
+| [Get back](#table-of-contents) | [To main page](../README.md) |
+
+---
+
 
 For check that value is greater or equals the specified value operator `>=` could be used.
 
 Example:
 `/some-entity?randomNumber=>=10` - request will return only values where `randomNumber` greater or equals to 10
+
+---
 ### Less or Equals to
+
+| [Get back](#table-of-contents) | [To main page](../README.md) |
+
+---
+
 
 For check that value is less or equals the specified value operator `<=` could be used.
 
 Example:
 `/some-entity?randomNumber=<=10` - request will return only values where `randomNumber` greater than 10
 
+---
 ### Or
+
+| [Get back](#table-of-contents) | [To main page](../README.md) |
+
+---
+
 
 To select entities by a couple of possible values for fields 'or' operation is very useful.
 
@@ -234,7 +296,13 @@ For this used operator `|`. Specify all the needed values when checking field fo
 Example: `/some-entity?email=someemail@mail.com|oremail@mail.com|anotherone@mail.com` - the request will return entities
 where email equals to `someemail@mail.com` or `oremail@mail.com` or `anotherone@mail.com`
 
+---
 ### Range
+
+| [Get back](#table-of-contents) | [To main page](../README.md) |
+
+---
+
 
 To select by range of values operator `..` should be used.
 It works similarly to `between` in SQL.
@@ -242,14 +310,26 @@ It works similarly to `between` in SQL.
 Example: `/some-entity?birthdate=1992-01-20T20:29:20..2000-01-20T20:29:20` - the request will return values
 which range is between left date and right date
 
+---
 ## Aggregate functions
+
+| [Get back](#table-of-contents) | [To main page](../README.md) |
+
+---
+
+### Group by
 ### Sum
 ### Min
 ### Max
 ### Avg
-### Group by
 
+---
 ## Pagination
+
+| [Get back](#table-of-contents) | [To main page](../README.md) |
+
+---
+
 
 The Viewton library allows for pagination of queries,
 meaning it splits them into pages to reduce the load on the system and/or the database.
@@ -271,7 +351,12 @@ The application attribute viewton.request.default-page-size allows you to specif
 Pagination is ignored, and all entities will be returned if page_size is set to -1, either in the request or as the
 default value.
 
+---
 ## Sorting
+
+| [Get back](#table-of-contents) | [To main page](../README.md) |
+
+---
 
 In the query, you can specify fields and the order in which they should be sorted. This is done using the sorting
 parameter, where the values are attributes separated by commas. If a `-` sign precedes an attribute, it means the
